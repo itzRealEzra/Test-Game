@@ -5,15 +5,15 @@
 
 Both XAPK bundles contain the Artemiz base APK and matching split APKs. Use an installer that supports XAPK packages.
 
-## Weather cycle
+## Weather and combat updates
 
-The local cycle has eight fixed three-minute slots. Each event lasts two minutes, followed by one calm minute. Every event rolls a stable 2×–50× multiplier for its slot: Astral Surge boosts XP across all 17 skills; Verdant Bloom speeds Farming growth and increases harvest yield; Fortune Squall boosts monster drop chance, capped at 100%; Harvest Tide boosts Fishing, Forestry, and Mining yields; Artisan Ember boosts Cooking, Crafting, Firemaking, Fletching, and Alchemy outputs; Shadowveil boosts Thieving loot; Explorer's Aurora boosts Discovery rewards; Warfront boosts combat damage and attack speed while reducing incoming damage (capped at 95%). Each event has its own in-game style icon.
+Each three-minute slot randomly selects an event and a stable 2×–50× multiplier; the selection remains fixed for that slot. Events last two minutes, followed by one calm minute. Astral Surge boosts XP across all skills; Verdant Bloom speeds crop growth and multiplies normal and Golden Sunflower harvests; Fortune Squall boosts monster drop chance, capped at 100%; Harvest Tide boosts Fishing, Forestry, and Mining yields; Artisan Ember boosts Cooking, Crafting, Firemaking, Fletching, and Alchemy outputs; Shadowveil boosts Thieving loot; Explorer's Aurora boosts Discovery rewards; Warfront boosts combat damage and attack speed while reducing incoming damage by up to 95%.
 
-Explorer's Aurora applies its multiplier to every item in a Discovery reward batch.
+The Weather tab and rounded detail panel use a solid charcoal-and-gold style. Calm weather has its own icon and hides the random next-event forecast. In-game notices appear when an event starts or ends; the game stays quiet on first attach and does not replay transitions from time spent closed.
 
-Combat respawn now waits for the defeated enemy's full tick to finish so its loot and rewards are recorded before the next target refreshes.
+Combat loot stays accumulated while the selected monster name and area remain the same, and resets when the target changes. Collect Loot is wired to the game's loot-claim handler. Leave stops the combat timer before collecting accumulated drops and returning to the battle list, so collecting loot cannot keep a queued respawn alive.
 
 ## SHA-256
 
-- `CherryTree-Modded.xapk`: 2BC31A4B72739B3EE80A31C15CEB1157366AC7502B6A098E07AE7D1E0E62A7EC
-- `Artemiz-Android32.xapk`: 14ACF9A2D954B4CE2AD314D7397591C15E2C5A251C373051C019453C5F7DF346
+- `CherryTree-Modded.xapk`: `65E2AAF249416C9B3FB65F0C668E32E29DF87E10419B2557DAA993028FDE9CB9`
+- `Artemiz-Android32.xapk`: `D3F62FAB64E93081FAAE4A27569C40A3ACA658A3DB10F06417EDE6A4F94CB35B`
