@@ -1,6 +1,6 @@
 # Cloudflare weather relay (no PC runtime)
 
-This Worker replaces the always-running local Discord bot/HTTP server. Cloudflare receives Discord's signed slash-command interactions, checks the application signature and the configured guild/user IDs, then stores weather state in a SQLite-backed Durable Object. The Android client reads the same `/v1/weather/state` JSON shape as the local bridge.
+This Worker replaces the always-running local Discord bot/HTTP server. Cloudflare receives Discord's signed slash-command interactions, checks the application signature and the configured guild/user IDs, then stores global weather and announcement state in a SQLite-backed Durable Object. The Android client reads the same `/v1/weather/state` JSON shape as the local bridge.
 
 The Worker does not need a Discord bot token. It uses the app's public key to validate signed interactions. The PC-hosted bridge can remain running during setup; switch Discord and the Android client to the Worker only after deployment is ready.
 
@@ -31,12 +31,28 @@ The Worker does not need a Discord bot token. It uses the app's public key to va
    https://<your-worker-name>.<your-account-subdomain>.workers.dev/interactions
    ```
 
-   Discord verifies the endpoint with a signed PING. This Worker verifies Ed25519 signatures and replies to PINGs. The existing `/weather` commands stay registered; Discord will deliver their interactions to this URL instead of the Gateway bot.
+   Discord verifies the endpoint with a signed PING. This Worker verifies Ed25519 signatures and replies to PINGs.
 
-5. The current Android release has `https://artemiz-weather-relay.artemizweather.workers.dev` built in and migrates the old default PC address on upgrade. If your Worker has a different URL, enter its base URL in **Etc → Discord Weather Relay** without `/interactions`; the Android app appends `/v1/weather/state` itself.
-6. Check `https://<worker-url>/health`, then use `/weather status` in Discord Web. Once the cloud path works, stop the PC bridge.
+5. Register the new `/artemiz` command tree after deploying the Worker. In PowerShell, open this folder and enter:
 
-The Durable Object state is persistent and automatically returns to local weather after the configured event end time. Only signed Discord interactions from the configured guild and user can write state. The phone endpoint is read-only.
+   ```powershell
+   $env:DISCORD_APPLICATION_ID = "<Application ID>"
+   $env:WEATHER_GUILD_ID = "<Server ID>"
+   try {
+     $secureToken = Read-Host "Paste the Bot token (input is hidden)" -AsSecureString
+     $env:DISCORD_BOT_TOKEN = [System.Net.NetworkCredential]::new("", $secureToken).Password
+     if ([string]::IsNullOrWhiteSpace($env:DISCORD_BOT_TOKEN)) { throw "Bot token was empty." }
+     npm run register-commands
+   } finally {
+     Remove-Item Env:DISCORD_BOT_TOKEN, Env:DISCORD_APPLICATION_ID, Env:WEATHER_GUILD_ID -ErrorAction SilentlyContinue
+   }
+   ```
+
+   The script upserts `/artemiz` and removes the old `/weather` command. It does not print or save the token. The command tree includes `/artemiz weather start|stop|status` and `/artemiz message send|clear`.
+6. The current Android release has `https://artemiz-weather-relay.artemizweather.workers.dev` built in and migrates the old default PC address on upgrade. If your Worker has a different URL, enter its base URL in **Etc → Artemiz Game Commands** without `/interactions`; the Android app appends `/v1/weather/state` itself.
+7. Check `https://<worker-url>/health`, then use `/artemiz weather status` and `/artemiz message send` in Discord Web. Once the cloud path works, stop the PC bridge.
+
+The Durable Object state is persistent. Global weather returns to the shared scheduled cycle after an admin event expires; announcements expire automatically or can be cleared with Discord. Only signed interactions from the configured guild and user can write state. The phone endpoint is read-only.
 
 ## Free-plan sizing
 

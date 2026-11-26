@@ -9,6 +9,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInstaller;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -20,6 +21,7 @@ import android.util.Log;
 import android.widget.Toast;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,7 +30,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.ExecutorService;
@@ -44,7 +45,7 @@ public final class GameUpdater {
     private static final String MANIFEST_URL =
             "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/update.json";
     private static final long MAX_MANIFEST_BYTES = 64L * 1024L;
-    private static final long MAX_XAPK_BYTES = 100L * 1024L * 1024L;
+    private static final long MAX_PATCH_BYTES = 120L * 1024L * 1024L;
     private static final long MAX_APK_BYTES = 180L * 1024L * 1024L;
     private static final Object LOCK = new Object();
     private static final Handler MAIN = new Handler(Looper.getMainLooper());
@@ -104,16 +105,27 @@ public final class GameUpdater {
                 throw new IOException("Update manifest has no valid version.");
             }
 
+            long sourceVersion = installedVersionCode(context);
+            String releaseNotes = manifest.optString("release_notes", "");
+            if (versionCode <= sourceVersion) {
+                return new UpdateInfo(sourceVersion, versionCode, versionName, "", "", releaseNotes);
+            }
+
             String abiKey = supportsAbi("arm64-v8a") ? "arm64" : "armv7";
             JSONObject artifact = manifest.optJSONObject(abiKey);
             if (artifact == null) throw new IOException("No update is published for " + abiKey + ".");
-            String url = artifact.optString("url", "");
-            String sha256 = artifact.optString("sha256", "").toLowerCase(Locale.US);
-            if (!url.startsWith("https://") || !sha256.matches("[0-9a-f]{64}")) {
-                throw new IOException("Update link or checksum is invalid.");
+            JSONObject deltas = artifact.optJSONObject("deltas");
+            JSONObject delta = deltas == null ? null : deltas.optJSONObject(Long.toString(sourceVersion));
+            if (delta == null || delta.optLong("from_version_code", -1L) != sourceVersion
+                    || delta.optLong("to_version_code", -1L) != versionCode) {
+                throw new IOException("No patch is published for this installed version.");
             }
-            return new UpdateInfo(versionCode, versionName, url, sha256,
-                    manifest.optString("release_notes", ""));
+            String url = delta.optString("url", "");
+            String sha256 = delta.optString("sha256", "").toLowerCase(Locale.US);
+            if (!url.startsWith("https://") || !sha256.matches("[0-9a-f]{64}")) {
+                throw new IOException("Patch link or checksum is invalid.");
+            }
+            return new UpdateInfo(sourceVersion, versionCode, versionName, url, sha256, releaseNotes);
         } finally {
             connection.disconnect();
         }
@@ -136,24 +148,6 @@ public final class GameUpdater {
         return info.versionName == null ? "current build" : info.versionName;
     }
 
-    private static void showUpdatePrompt(final Activity activity, final UpdateInfo update) {
-        if (activity.isFinishing() || activity.isDestroyed()) return;
-        StringBuilder message = new StringBuilder();
-        message.append("Artemiz ").append(update.versionName).append(" is available.");
-        if (update.releaseNotes.length() > 0) {
-            message.append("\n\n").append(update.releaseNotes);
-        }
-        message.append("\n\nAndroid will update the existing app and keep its local save. "
-                + "The Android installer will ask you to confirm.");
-        new AlertDialog.Builder(activity)
-                .setTitle("Update available")
-                .setMessage(message.toString())
-                .setPositiveButton("Download & Install", (dialog, which) ->
-                        confirmInstallPermission(activity, update))
-                .setNegativeButton("Later", null)
-                .show();
-    }
-
     private static void confirmInstallPermission(final Activity activity, final UpdateInfo update) {
         if (Build.VERSION.SDK_INT < 26
                 || activity.getPackageManager().canRequestPackageInstalls()) {
@@ -162,8 +156,9 @@ public final class GameUpdater {
         }
         new AlertDialog.Builder(activity)
                 .setTitle("Allow game updates")
-                .setMessage("Android needs permission for Artemiz to request an update. "
-                        + "You will still confirm each installation in Android.")
+                .setMessage("Android needs permission for Artemiz to request updates. "
+                        + "Artemiz will apply the patch automatically; Android may still ask "
+                        + "you to confirm the installation.")
                 .setPositiveButton("Open Settings", (dialog, which) -> {
                     synchronized (LOCK) {
                         pendingPermissionUpdate = update;
@@ -178,10 +173,12 @@ public final class GameUpdater {
                         synchronized (LOCK) {
                             pendingPermissionUpdate = null;
                         }
-                        showToast(activity, "Open Android settings and allow Artemiz to install updates.");
+                        showToast(activity, "Open Android settings and allow Artemiz to request updates.");
+                        finishWelcomeUpdateCheck(activity);
                     }
                 })
-                .setNegativeButton("Cancel", null)
+                .setNegativeButton("Cancel", (dialog, which) -> finishWelcomeUpdateCheck(activity))
+                .setOnCancelListener(dialog -> finishWelcomeUpdateCheck(activity))
                 .show();
     }
 
@@ -197,15 +194,23 @@ public final class GameUpdater {
                 @Override public void onActivitySaveInstanceState(Activity a, android.os.Bundle state) { }
                 @Override public void onActivityDestroyed(Activity a) { }
                 @Override public void onActivityResumed(Activity resumed) {
-                    if (!PACKAGE_NAME.equals(resumed.getPackageName())
-                            || Build.VERSION.SDK_INT < 26
-                            || !resumed.getPackageManager().canRequestPackageInstalls()) return;
+                    if (!PACKAGE_NAME.equals(resumed.getPackageName()) || Build.VERSION.SDK_INT < 26) return;
                     final UpdateInfo pending;
                     synchronized (LOCK) {
                         pending = pendingPermissionUpdate;
-                        pendingPermissionUpdate = null;
+                        if (pending != null && resumed.getPackageManager().canRequestPackageInstalls()) {
+                            pendingPermissionUpdate = null;
+                        } else if (pending != null) {
+                            pendingPermissionUpdate = null;
+                        }
                     }
-                    if (pending != null) downloadAndInstall(resumed, pending);
+                    if (pending == null) return;
+                    if (resumed.getPackageManager().canRequestPackageInstalls()) {
+                        downloadAndInstall(resumed, pending);
+                    } else {
+                        showToast(resumed, "Install permission was not enabled. The patch will retry next launch.");
+                        finishWelcomeUpdateCheck(resumed);
+                    }
                 }
             });
             lifecycleRegistered = true;
@@ -219,7 +224,7 @@ public final class GameUpdater {
         }
         final ProgressDialog progress = new ProgressDialog(activity);
         progress.setTitle("Updating Artemiz");
-        progress.setMessage("Downloading " + update.versionName + "…");
+        progress.setMessage("Downloading and applying patch " + update.versionName + "…");
         progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         progress.setIndeterminate(true);
         progress.setCancelable(false);
@@ -228,16 +233,16 @@ public final class GameUpdater {
         EXECUTOR.execute(new DownloadUpdateTask(activity, update, progress));
     }
 
-    private static File downloadXapk(Context context, UpdateInfo update,
+    private static File downloadPatch(Context context, UpdateInfo update,
             final ProgressDialog progress) throws Exception {
         HttpURLConnection connection = openHttps(update.url, 20000, 30000);
         File output = new File(context.getCacheDir(),
-                "artemiz-update-" + update.versionCode + ".xapk");
+                "artemiz-update-" + update.fromVersionCode + "-to-" + update.versionCode + ".patch.zip");
         try {
             int status = connection.getResponseCode();
-            if (status < 200 || status >= 300) throw new IOException("Download returned HTTP " + status);
+            if (status < 200 || status >= 300) throw new IOException("Patch download returned HTTP " + status);
             long expectedLength = connection.getContentLengthLong();
-            if (expectedLength > MAX_XAPK_BYTES) throw new IOException("Update bundle is too large.");
+            if (expectedLength > MAX_PATCH_BYTES) throw new IOException("Update patch is too large.");
             if (expectedLength > 0) {
                 MAIN.post(() -> {
                     progress.setIndeterminate(false);
@@ -253,7 +258,7 @@ public final class GameUpdater {
                 int count;
                 while ((count = input.read(buffer)) != -1) {
                     total += count;
-                    if (total > MAX_XAPK_BYTES) throw new IOException("Update bundle is too large.");
+                    if (total > MAX_PATCH_BYTES) throw new IOException("Update patch is too large.");
                     digest.update(buffer, 0, count);
                     file.write(buffer, 0, count);
                     if (expectedLength > 0 && total - lastProgress > 512L * 1024L) {
@@ -265,7 +270,7 @@ public final class GameUpdater {
                 file.getFD().sync();
             }
             String actual = hex(digest.digest());
-            if (!actual.equals(update.sha256)) throw new IOException("Update checksum did not match.");
+            if (!actual.equals(update.sha256)) throw new IOException("Patch checksum did not match.");
             return output;
         } catch (Exception error) {
             output.delete();
@@ -275,50 +280,104 @@ public final class GameUpdater {
         }
     }
 
-    private static void stageXapk(Context context, File xapk, UpdateInfo update) throws Exception {
-        List<ZipEntry> apkEntries = new ArrayList<>();
-        long totalApkBytes = 0L;
-        boolean hasBase = false;
-        try (ZipFile zip = new ZipFile(xapk)) {
-            ZipEntry manifestEntry = zip.getEntry("manifest.json");
-            if (manifestEntry == null) throw new IOException("XAPK is missing its manifest.");
-            JSONObject xapkManifest = new JSONObject(readLimited(
-                    zip.getInputStream(manifestEntry), MAX_MANIFEST_BYTES));
-            if (!PACKAGE_NAME.equals(xapkManifest.optString("package_name"))
-                    || xapkManifest.optLong("version_code", -1L) != update.versionCode) {
-                throw new IOException("XAPK identity or version does not match the update.");
-            }
-            JSONArray splits = xapkManifest.optJSONArray("split_apks");
-            if (splits == null || splits.length() < 2 || splits.length() > 8) {
-                throw new IOException("XAPK split list is invalid.");
-            }
-            for (int i = 0; i < splits.length(); i++) {
-                JSONObject split = splits.getJSONObject(i);
-                String name = split.optString("file", "");
-                if (!name.matches("[A-Za-z0-9_.-]+\\.apk")) {
-                    throw new IOException("XAPK contains an invalid APK path.");
-                }
-                ZipEntry entry = zip.getEntry(name);
-                if (entry == null || entry.isDirectory() || entry.getSize() <= 0L) {
-                    throw new IOException("XAPK is missing " + name + ".");
-                }
-                totalApkBytes += entry.getSize();
-                if (totalApkBytes > MAX_APK_BYTES) throw new IOException("APK contents are too large.");
-                if ("base".equals(split.optString("id"))) hasBase = true;
-                apkEntries.add(entry);
-            }
-            if (!hasBase) throw new IOException("XAPK is missing its base APK.");
+    private static void applyAndStagePatch(Context context, File patchBundle, UpdateInfo update)
+            throws Exception {
+        if (installedVersionCode(context) != update.fromVersionCode) {
+            throw new IOException("Installed version changed before patching.");
+        }
 
-            PackageInstaller installer = context.getPackageManager().getPackageInstaller();
+        PackageManager packageManager = context.getPackageManager();
+        ApplicationInfo application = packageManager.getApplicationInfo(PACKAGE_NAME, 0);
+        PackageInfo packageInfo = packageManager.getPackageInfo(PACKAGE_NAME, 0);
+        List<TargetApk> targets = new ArrayList<>();
+        List<File> temporaryFiles = new ArrayList<>();
+        long totalApkBytes = 0L;
+        try (ZipFile zip = new ZipFile(patchBundle)) {
+            ZipEntry manifestEntry = zip.getEntry("patch.json");
+            if (manifestEntry == null || manifestEntry.isDirectory()) {
+                throw new IOException("Patch is missing patch.json.");
+            }
+            JSONObject patchManifest = new JSONObject(readLimited(
+                    zip.getInputStream(manifestEntry), MAX_MANIFEST_BYTES));
+            if (!"artemiz-bsdiff-v1".equals(patchManifest.optString("format"))
+                    || !PACKAGE_NAME.equals(patchManifest.optString("package_name"))
+                    || patchManifest.optLong("from_version_code", -1L) != update.fromVersionCode
+                    || patchManifest.optLong("to_version_code", -1L) != update.versionCode) {
+                throw new IOException("Patch package, format, or version is incorrect.");
+            }
+
+            List<InstalledApk> installedApks = installedApks(application, packageInfo);
+            JSONArray parts = patchManifest.optJSONArray("split_apks");
+            if (parts == null || parts.length() != installedApks.size()
+                    || parts.length() < 2 || parts.length() > 8) {
+                throw new IOException("Patch split list does not match this installation.");
+            }
+
+            java.util.HashSet<String> seenIds = new java.util.HashSet<>();
+            java.util.HashSet<String> seenFiles = new java.util.HashSet<>();
+            for (int i = 0; i < parts.length(); i++) {
+                JSONObject part = parts.getJSONObject(i);
+                String id = part.optString("id", "");
+                String name = part.optString("file", "");
+                String patchName = part.optString("patch", "");
+                String oldSha256 = part.optString("old_sha256", "").toLowerCase(Locale.US);
+                String newSha256 = part.optString("new_sha256", "").toLowerCase(Locale.US);
+                if (!id.matches("[A-Za-z0-9_.-]+")
+                        || !name.matches("[A-Za-z0-9_.-]+\\.apk")
+                        || !patchName.matches("patches/[A-Za-z0-9_.-]+\\.bsdiff")
+                        || !oldSha256.matches("[0-9a-f]{64}")
+                        || !newSha256.matches("[0-9a-f]{64}")
+                        || !seenIds.add(id) || !seenFiles.add(name)) {
+                    throw new IOException("Patch contains invalid split metadata.");
+                }
+
+                File oldApk = findInstalledApk(installedApks, id);
+                if (oldApk == null || !oldApk.isFile()
+                        || !oldSha256.equals(sha256File(oldApk))) {
+                    throw new IOException("Installed " + id + " APK does not match this patch.");
+                }
+                ZipEntry patchEntry = zip.getEntry(patchName);
+                if (patchEntry == null || patchEntry.isDirectory()
+                        || patchEntry.getSize() <= 0L || patchEntry.getSize() > MAX_PATCH_BYTES) {
+                    throw new IOException("Patch data is missing for " + id + ".");
+                }
+
+                File patchPart = new File(context.getCacheDir(),
+                        "artemiz-part-" + update.versionCode + "-" + id + ".bsdiff");
+                File newApk = new File(context.getCacheDir(),
+                        "artemiz-rebuilt-" + update.versionCode + "-" + id + ".apk");
+                temporaryFiles.add(patchPart);
+                temporaryFiles.add(newApk);
+                try (InputStream input = zip.getInputStream(patchEntry);
+                        FileOutputStream output = new FileOutputStream(patchPart, false)) {
+                    copyLimited(input, output, MAX_PATCH_BYTES);
+                    output.getFD().sync();
+                }
+                BsdiffPatch.apply(oldApk, patchPart, newApk);
+                String actualSha256 = sha256File(newApk);
+                if (!newSha256.equals(actualSha256)) {
+                    throw new IOException("Rebuilt " + id + " APK failed its hash check.");
+                }
+                totalApkBytes += newApk.length();
+                if (totalApkBytes > MAX_APK_BYTES) throw new IOException("Rebuilt APK set is too large.");
+                targets.add(new TargetApk(name, newApk));
+            }
+
+            if (!seenIds.contains("base")) throw new IOException("Patch is missing the base APK.");
+            PackageInstaller installer = packageManager.getPackageInstaller();
             PackageInstaller.SessionParams params =
                     new PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL);
+            params.setAppPackageName(PACKAGE_NAME);
             params.setSize(totalApkBytes);
+            if (Build.VERSION.SDK_INT >= 31) {
+                params.setRequireUserAction(PackageInstaller.SessionParams.USER_ACTION_NOT_REQUIRED);
+            }
             int sessionId = installer.createSession(params);
             boolean committed = false;
             try (PackageInstaller.Session session = installer.openSession(sessionId)) {
-                for (ZipEntry entry : apkEntries) {
-                    try (InputStream input = zip.getInputStream(entry);
-                            OutputStream output = session.openWrite(entry.getName(), 0L, entry.getSize())) {
+                for (TargetApk target : targets) {
+                    try (FileInputStream input = new FileInputStream(target.file);
+                            OutputStream output = session.openWrite(target.name, 0L, target.file.length())) {
                         byte[] buffer = new byte[32768];
                         int count;
                         while ((count = input.read(buffer)) != -1) output.write(buffer, 0, count);
@@ -331,12 +390,58 @@ public final class GameUpdater {
                 int flags = PendingIntent.FLAG_UPDATE_CURRENT;
                 if (Build.VERSION.SDK_INT >= 31) flags |= PendingIntent.FLAG_MUTABLE;
                 PendingIntent result = PendingIntent.getBroadcast(context, sessionId, callback, flags);
-                IntentSender statusReceiver = result.getIntentSender();
-                session.commit(statusReceiver);
+                session.commit(result.getIntentSender());
                 committed = true;
             } finally {
                 if (!committed) installer.abandonSession(sessionId);
             }
+        } finally {
+            for (File file : temporaryFiles) file.delete();
+        }
+    }
+
+    private static List<InstalledApk> installedApks(ApplicationInfo application,
+            PackageInfo packageInfo) throws IOException {
+        List<InstalledApk> result = new ArrayList<>();
+        if (application.sourceDir == null) throw new IOException("Installed base APK was not found.");
+        result.add(new InstalledApk("base", new File(application.sourceDir)));
+        String[] names = packageInfo.splitNames;
+        String[] paths = application.splitSourceDirs;
+        if (names == null) names = new String[0];
+        if (paths == null) paths = new String[0];
+        if (names.length != paths.length) throw new IOException("Installed splits are incomplete.");
+        for (int i = 0; i < names.length; i++) {
+            result.add(new InstalledApk(names[i], new File(paths[i])));
+        }
+        return result;
+    }
+
+    private static File findInstalledApk(List<InstalledApk> installed, String splitId) {
+        for (InstalledApk apk : installed) {
+            if (splitId.equals(apk.id)) return apk.file;
+        }
+        return null;
+    }
+
+    private static String sha256File(File file) throws Exception {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        try (InputStream input = new FileInputStream(file)) {
+            byte[] buffer = new byte[32768];
+            int count;
+            while ((count = input.read(buffer)) != -1) digest.update(buffer, 0, count);
+        }
+        return hex(digest.digest());
+    }
+
+    private static void copyLimited(InputStream input, OutputStream output, long limit)
+            throws IOException {
+        byte[] buffer = new byte[32768];
+        long total = 0L;
+        int count;
+        while ((count = input.read(buffer)) != -1) {
+            total += count;
+            if (total > limit) throw new IOException("Patch component is too large.");
+            output.write(buffer, 0, count);
         }
     }
 
@@ -435,8 +540,7 @@ public final class GameUpdater {
                 finishWelcomeUpdateCheck(activity);
                 return;
             }
-            showUpdatePrompt(activity, latest);
-            finishWelcomeUpdateCheck(activity);
+            confirmInstallPermission(activity, latest);
         }
     }
 
@@ -472,8 +576,8 @@ public final class GameUpdater {
         @Override public void run() {
             File download = null;
             try {
-                download = downloadXapk(activity, update, progress);
-                stageXapk(activity, download, update);
+                download = downloadPatch(activity, update, progress);
+                applyAndStagePatch(activity, download, update);
                 download.delete();
                 MAIN.post(new InstallLaunchMessage(activity, progress));
             } catch (Exception error) {
@@ -497,7 +601,8 @@ public final class GameUpdater {
 
         @Override public void run() {
             if (progress.isShowing()) progress.dismiss();
-            showToast(activity, "Opening Android's installer…");
+            showToast(activity, "Patch applied. Finishing the update…");
+            finishWelcomeUpdateCheck(activity);
         }
     }
 
@@ -517,6 +622,7 @@ public final class GameUpdater {
             if (!activity.isFinishing() && !activity.isDestroyed()) {
                 showToast(activity, "Update failed: " + safeMessage(error));
             }
+            finishWelcomeUpdateCheck(activity);
         }
     }
 
@@ -543,19 +649,41 @@ public final class GameUpdater {
     }
 
     private static final class UpdateInfo {
+        final long fromVersionCode;
         final long versionCode;
         final String versionName;
         final String url;
         final String sha256;
         final String releaseNotes;
 
-        UpdateInfo(long versionCode, String versionName, String url, String sha256,
+        UpdateInfo(long fromVersionCode, long versionCode, String versionName, String url, String sha256,
                 String releaseNotes) {
+            this.fromVersionCode = fromVersionCode;
             this.versionCode = versionCode;
             this.versionName = versionName;
             this.url = url;
             this.sha256 = sha256;
             this.releaseNotes = releaseNotes;
+        }
+    }
+
+    private static final class InstalledApk {
+        final String id;
+        final File file;
+
+        InstalledApk(String id, File file) {
+            this.id = id;
+            this.file = file;
+        }
+    }
+
+    private static final class TargetApk {
+        final String name;
+        final File file;
+
+        TargetApk(String name, File file) {
+            this.name = name;
+            this.file = file;
         }
     }
 }

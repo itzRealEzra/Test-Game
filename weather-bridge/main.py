@@ -53,6 +53,7 @@ def default_state() -> dict[str, Any]:
         "startedAtMs": 0,
         "endsAtMs": 0,
         "revision": 0,
+        "announcement": None,
     }
 
 
@@ -64,6 +65,7 @@ def read_state() -> dict[str, Any]:
         if data.get("mode") == "event":
             if data.get("event") not in EVENTS or not (2 <= int(data.get("multiplier", 0)) <= 50):
                 return default_state()
+        data.setdefault("announcement", None)
         return data
     except (OSError, ValueError, TypeError, json.JSONDecodeError):
         return default_state()
@@ -79,11 +81,21 @@ def persist_state() -> None:
 
 
 def expire_if_needed() -> None:
-    if STATE.get("mode") == "event" and int(STATE.get("endsAtMs", 0)) <= now_ms():
+    now = now_ms()
+    changed = False
+    announcement = STATE.get("announcement")
+    if isinstance(announcement, dict) and int(announcement.get("expiresAtMs", 0)) <= now:
+        announcement = None
+        STATE["announcement"] = None
+        changed = True
+    if STATE.get("mode") == "event" and int(STATE.get("endsAtMs", 0)) <= now:
         revision = int(STATE.get("revision", 0)) + 1
         STATE.clear()
         STATE.update(default_state())
         STATE["revision"] = revision
+        STATE["announcement"] = announcement
+        changed = True
+    if changed:
         persist_state()
 
 
@@ -113,9 +125,33 @@ def set_event(event: str, multiplier: int, duration_minutes: int) -> dict[str, A
 def stop_event() -> dict[str, Any]:
     with STATE_LOCK:
         revision = int(STATE.get("revision", 0)) + 1
+        announcement = STATE.get("announcement")
         STATE.clear()
         STATE.update(default_state())
         STATE["revision"] = revision
+        STATE["announcement"] = announcement
+        persist_state()
+        return dict(STATE)
+
+
+def set_announcement(message: str, duration_minutes: int) -> dict[str, Any]:
+    created = now_ms()
+    with STATE_LOCK:
+        STATE["announcement"] = {
+            "id": f"{created}-{int(STATE.get('revision', 0)) + 1}",
+            "text": message,
+            "createdAtMs": created,
+            "expiresAtMs": created + duration_minutes * 60_000,
+        }
+        STATE["revision"] = int(STATE.get("revision", 0)) + 1
+        persist_state()
+        return dict(STATE)
+
+
+def clear_announcement() -> dict[str, Any]:
+    with STATE_LOCK:
+        STATE["announcement"] = None
+        STATE["revision"] = int(STATE.get("revision", 0)) + 1
         persist_state()
         return dict(STATE)
 
@@ -212,7 +248,9 @@ def start_discord_bot() -> None:
     guild = discord.Object(id=guild_id)
     client = discord.Client(intents=discord.Intents.none())
     tree = app_commands.CommandTree(client)
-    weather_group = app_commands.Group(name="weather", description="Control local game weather")
+    artemiz_group = app_commands.Group(name="artemiz", description="Control Artemiz game events")
+    weather_group = app_commands.Group(name="weather", description="Control global game weather")
+    message_group = app_commands.Group(name="message", description="Send a message to active game clients")
 
     async def authorized(interaction: discord.Interaction) -> bool:
         if interaction.guild_id != guild_id or interaction.user.id != allowed_user_id:
@@ -264,12 +302,42 @@ def start_discord_bot() -> None:
             message = "No admin event is active; normal in-game weather is running."
         await interaction.response.send_message(message, ephemeral=True)
 
-    tree.add_command(weather_group, guild=guild)
+    @message_group.command(name="send", description="Show a message in active game clients")
+    @app_commands.describe(text="Message shown to players (up to 500 characters)",
+                           duration_minutes="How long the message stays available (1–120 minutes)")
+    async def send_announcement(
+        interaction: discord.Interaction,
+        text: str,
+        duration_minutes: app_commands.Range[int, 1, 120] = 5,
+    ) -> None:
+        if not await authorized(interaction):
+            return
+        message = text.strip()
+        if not message or len(message) > 500:
+            await interaction.response.send_message(
+                "Enter a message of 1–500 characters.", ephemeral=True)
+            return
+        state = set_announcement(message, int(duration_minutes))
+        await interaction.response.send_message(
+            f"Announcement sent to active game clients for {duration_minutes} minute(s). "
+            f"Revision {state['revision']}.", ephemeral=True)
+
+    @message_group.command(name="clear", description="Clear the active game announcement")
+    async def clear_announcement_command(interaction: discord.Interaction) -> None:
+        if not await authorized(interaction):
+            return
+        clear_announcement()
+        await interaction.response.send_message(
+            "The active game announcement was cleared.", ephemeral=True)
+
+    artemiz_group.add_command(weather_group)
+    artemiz_group.add_command(message_group)
+    tree.add_command(artemiz_group, guild=guild)
 
     @client.event
     async def on_ready() -> None:
         await tree.sync(guild=guild)
-        print("Discord weather bot connected as " + str(client.user))
+        print("Artemiz Discord bot connected as " + str(client.user))
         print("Slash commands synced to guild " + str(guild_id))
 
     client.run(token, log_handler=None)

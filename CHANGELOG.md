@@ -1,12 +1,38 @@
 # Changelog
 
+## 2026-11-27
+
+### v665 global events and community updates
+
+- Weather event slots now align to UTC epoch time, so clients use the same rotating event and multiplier instead of seeding the cycle on each install.
+- Fortune Squall now multiplies eligible loot quantities and battle drop chances for all categories covered by the shared reward paths.
+- Added timed `/artemiz message send` and `/artemiz message clear` Discord commands. Connected clients receive one popup over the currently open game screen; announcements expire after the selected duration.
+- Moved global weather controls under `/artemiz weather` and changed the in-game relay section to **Artemiz Game Commands**.
+- Updated the community links to the new Discord invite and the owner's Facebook profile. Removed YouTube and TikTok from the social list.
+- Updated the Welcome screen release notes and bumped the app to v665.
+- Built the next update as an automatic patch for the v664 patch-enabled client. This build has not been installed or launched; runtime behavior remains for the user's testing.
+
 ## 2026-11-26
 
 ### v664 progression crash fix
 
 - Removed the skill progress bar's exact `long`-to-`int` conversions. Thresholds above 2,147,483,647 XP now render on a bounded 0–10,000 progress scale while XP totals and threshold math remain 64-bit.
 - Built and signature-checked ARM64 and ARMv7 v664 XAPK bundles; the base APK and all four splits report version code 664 and align correctly.
-- Published v664 in the update manifest for launch-time update testing. It was not installed.
+- Published v664 in the update manifest for launch-time update checking.
+
+### Patch-only updater bootstrap
+
+- Added a patch client that selects a BSDIFF delta by installed version and device ABI, verifies the patch and every reconstructed APK, and submits the complete split set through Android PackageInstaller.
+- Added the release-side patch generator, checksum-pinned DEX build script, and third-party notices. Full release steps and the required manifest delta format are in [update-client/README.md](update-client/README.md).
+- Built the patch client into a v664 bootstrap using the same signing key and existing game resources/splits. Kept version code 664 so it can update the existing v664 install without a data reset.
+- Installed the bootstrap over the connected ARMv7 device with `adb install-multiple -r`. Package Manager reports v664 with the base, ARMv7, English, and mdpi splits. The game was not launched.
+- The current public manifest remains at v664. A future release must include an exact `664` delta for ARMv7, generated from the matching patch-enabled bootstrap XAPK. Android 10 still requires its system update confirmation screen.
+
+### Continue-to-Game crash fix
+
+- Fixed the `NoClassDefFoundError` for `ModMenu`: the first patch bootstrap had overwritten the existing second DEX with updater-only classes. The rebuilt `classes2.dex` now contains both `ModMenu` and the patch updater.
+- Fixed ART's `VerifyError` in the safe-crack success handler by explicitly setting its safe-count increment to a wide `1` after the code path merge.
+- Reassembled the main DEX, signed the base with the installed certificate, regenerated both v664 bootstrap XAPKs, and installed the complete ARMv7 split set over the existing app. ADB returned `Success`; the game was not launched.
 
 ### v663 follow-up
 

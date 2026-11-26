@@ -13,16 +13,18 @@ The relay exposes only a read-only weather-state endpoint to private-network cli
 5. Edit `.env` and set `DISCORD_BOT_TOKEN`, `DISCORD_GUILD_ID`, and `DISCORD_ALLOWED_USER_ID`. Restart `run-weather-relay.ps1`.
 6. If Windows Firewall asks, allow Python on **Private networks only**. If it does not prompt and the phone cannot connect, run `setup-private-firewall.ps1` once from an elevated PowerShell window. Keep the PC and phone on the same private Wi-Fi; do not forward port 8765 on your router.
 
-The script prints the PC address, for example `http://192.168.1.20:8765`. In the game, open **Mod Menu → Etc. → Discord Weather Relay** and paste the printed address. The game polls the relay while it is open. The relay status below the field changes to “Connected” after the first successful request.
+The script prints the PC address, for example `http://192.168.1.20:8765`. In the game, open **Mod Menu → Etc. → Artemiz Game Commands** and paste the printed address. The game polls the relay while it is open. The relay status below the field changes to “Connected” after the first successful request.
 
 ## Discord commands
 
-- `/weather start` — choose one of the eight weather events, a multiplier from 2× to 50×, and a duration from 1 to 120 minutes. A new start replaces the current event.
-- `/weather status` — show the current admin event and remaining time.
-- `/weather stop` — end the admin event and return to the normal local weather cycle.
+- `/artemiz weather start` — choose one of the eight events, a multiplier from 2× to 50×, and a duration from 1 to 120 minutes. The event is synchronized for clients connected to the relay.
+- `/artemiz weather status` — show the active admin event and remaining time.
+- `/artemiz weather stop` — end the admin event and return to the shared event schedule.
+- `/artemiz message send` — show a message over the current game screen for connected clients. It expires after 5 minutes by default; set 1–120 minutes if needed.
+- `/artemiz message clear` — clear the active game message.
 
-Commands are registered only in `DISCORD_GUILD_ID` and only `DISCORD_ALLOWED_USER_ID` can use them. Changes are also saved locally so a running event survives a bot restart and expires at its configured time.
+Commands are registered only in `DISCORD_GUILD_ID` and only `DISCORD_ALLOWED_USER_ID` can use them. Weather and announcement state survive a bot restart and expire at their configured times.
 
 ## Scope
 
-The command changes weather effects in this modded client. It does not write to the game's online backend, change other players' clients, or grant server-validated rewards. The relay is intentionally read-only from the phone; there is no HTTP command endpoint.
+The shared event schedule and admin override affect clients running this mod and connected to the relay. The relay is intentionally read-only from the phone; there is no HTTP command endpoint.

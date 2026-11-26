@@ -11,28 +11,32 @@ Progress continues to save on the device. Google Play cloud-save restore is disa
 
 ## Online in-place updates
 
-Artemiz checks the public update.json manifest on every launch and keeps **Continue to Game** disabled until the check finishes. If an update is available, it offers the update before gameplay. If the device is offline or the check fails, Continue becomes available. There is no in-game manual update button. The updater chooses the ARM64 or ARMv7 XAPK for the device, verifies the bundle's SHA-256, stages all APK splits together, and opens Android's installer. Android may first ask you to allow Artemiz to request installs; the system installer then asks you to confirm the update.
+Artemiz checks the public `update.json` manifest on every launch and keeps **Continue to Game** disabled until the check finishes. When a newer release has a matching patch for the installed version and device ABI, the updater automatically downloads that small patch archive, checks its SHA-256, reconstructs and verifies the base and split APKs, then stages them together through Android's Package Installer. It does not download the full XAPK. Offline or failed checks release Continue. See [the patch release guide](update-client/README.md) for preparing each ABI's delta.
 
-The updater first shipped in version 660. Version 660 is a one-time update for players on version 659; install it over the existing app with an XAPK installer or `adb install-multiple -r` to keep the local save. Version 664 and later are checked automatically at launch, before Continue is enabled. Updates must use a higher version code and the same signing key as the installed build.
+The patch client is now installed on the connected ARMv7 device as a v664 bootstrap; it was installed over the existing game with `adb install-multiple -r`, preserving local app data. The current public manifest remains v664, so a later release must publish a delta with `from_version_code: 664` under the matching ABI's `deltas` object. Updates must use a higher version code, include all APK splits, and use the same signing key as the installed build. Players who have not installed the patch-enabled bootstrap still need a full XAPK update first.
+
+The patch download and APK reconstruction happen automatically. Android can still require the user to allow Artemiz to request installs and confirm the update. This device runs Android 10, where PackageInstaller requires that confirmation; newer Android versions can allow user-action-free updates only when the platform's eligibility requirements are met. [Android's PackageInstaller API documents those conditions](https://developer.android.com/reference/android/content/pm/PackageInstaller.SessionParams#setRequireUserAction(int)).
 
 The manifest and XAPKs are served from this repository's public main branch. Keep the repository public while clients use these URLs; if you make it private, move update.json and both XAPKs to a public host such as Cloudflare R2 and change the built-in manifest URL.
 
 ## Weather and combat updates
 
-Each three-minute slot randomly selects an event and a stable 2×–50× multiplier; the selection remains fixed for that slot. Events last two minutes, followed by one calm minute. Astral Surge boosts XP across all skills; Verdant Bloom speeds crop growth and multiplies normal and Golden Sunflower harvests; Fortune Squall boosts monster drop chance, capped at 100%; Harvest Tide boosts Fishing, Forestry, and Mining yields; Artisan Ember boosts Cooking, Crafting, Firemaking, Fletching, and Alchemy outputs; Shadowveil boosts Thieving loot; Explorer's Aurora boosts Discovery rewards; Warfront boosts combat damage and attack speed while reducing incoming damage by up to 95%.
+Each three-minute UTC slot selects the same event and stable 2×–50× multiplier for all clients. Events last two minutes, followed by one calm minute. Astral Surge boosts XP across all skills; Verdant Bloom speeds crop growth and multiplies normal and Golden Sunflower harvests; Fortune Squall boosts eligible loot quantities across skill categories and monster drop chance (capped at 100%); Harvest Tide boosts Fishing, Forestry, and Mining yields; Artisan Ember boosts Cooking, Crafting, Firemaking, Fletching, and Alchemy outputs; Shadowveil boosts Thieving loot; Explorer's Aurora boosts Discovery rewards; Warfront boosts combat damage and attack speed while reducing incoming damage by up to 95%.
 
 The Weather tab and detail panel use the game's `contentbox` surface, native colors and Linotte fonts. The panel shows the current event icon, effect, remaining time and a live progress bar, with a short entrance and icon animation. Calm weather has its own icon and hides the random next-event forecast. In-game notices follow the active event identity, so a long admin event is not restarted or reported as ended when the local random cycle rolls over. The game stays quiet on first attach and does not replay transitions from time spent closed.
 
-## Discord weather commands
+## Artemiz Discord commands
 
-The [Cloudflare Worker](weather-bridge/cloudflare/README.md) URL is built into the Android client, so Discord weather commands work while the PC is off. The app also migrates the old default PC relay address on upgrade. If you deploy a Worker under a different URL, change the address in **Mod Menu → Etc. → Discord Weather Relay**. The Worker verifies Discord signatures and does not need a bot token; the phone-facing endpoint is read-only and does not connect to or modify the game's backend. The optional [local weather bridge](weather-bridge/README.md) remains available for PC-hosted testing.
+The [Cloudflare Worker](weather-bridge/cloudflare/README.md) URL is built into the Android client, so Discord weather and announcement commands work while the PC is off. The app also migrates the old default PC relay address on upgrade. If you deploy a Worker under a different URL, change the address in **Mod Menu → Etc. → Artemiz Game Commands**. Use `/artemiz weather ...` for global weather and `/artemiz message send|clear` for in-game popup messages. The Worker verifies Discord signatures and does not need a bot token at runtime; the phone-facing endpoint is read-only and does not connect to or modify the game's backend. The optional [local weather bridge](weather-bridge/README.md) remains available for PC-hosted testing.
 
 Combat loot stays accumulated while the selected monster name and area remain the same, and resets when the target changes. The battle controls dispatch by their actual view IDs: Collect Loot calls the game's loot-claim handler, while Leave stops the combat timer before collecting drops and returning to the battle list. This avoids the shared click-selector sending either button to an unrelated Slayer action.
 
-## Latest update — 2026-11-26 (v664)
+## Latest update — 2026-11-27 (v665)
 
-- Fixed the skill XP bar crash above 2,147,483,647 XP. XP and thresholds stay 64-bit; the bar now calculates progress relative to the current level on a 0–10,000 scale.
-- Published the signed ARM64 and ARMv7 v664 bundles and update manifest for the built-in launch checker. This build was not installed so the auto-update can be tested.
+- Weather events now use the same three-minute UTC schedule on every client, with Fortune Squall boosting loot quantity across categories and monster drop chance.
+- Added global `/artemiz weather` controls and timed `/artemiz message send|clear` commands. Game announcements appear over the player's current screen and expire automatically.
+- Updated the social links: new Discord invite, owner's Facebook profile, and no YouTube or TikTok entries.
+- Built v665 as an automatic update patch for the v664 patch-enabled bootstrap. The APK has not been installed or launched; please test the patch through the in-game updater.
 
 ### v663 update
 

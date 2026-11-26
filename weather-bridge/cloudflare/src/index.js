@@ -12,6 +12,7 @@ const EVENT_NAMES = {
 const encoder = new TextEncoder();
 const MAX_INTERACTION_BYTES = 64 * 1024;
 const MAX_SIGNATURE_AGE_MS = 5 * 60 * 1000;
+const MAX_ANNOUNCEMENT_LENGTH = 500;
 
 function jsonResponse(status, payload) {
   return new Response(JSON.stringify(payload), {
@@ -90,13 +91,14 @@ function interactionReply(content) {
 }
 
 function commandOptions(interaction) {
-  const first = interaction.data?.options?.[0];
-  if (!first) return { name: "", options: [] };
-  if (first.type === 2) {
-    const nested = first.options?.[0];
-    return { name: nested?.name || "", options: nested?.options || [] };
-  }
-  return { name: first.name || "", options: first.options || [] };
+  const rootOptions = interaction.data?.options || [];
+  const group = rootOptions.find((option) => option.type === 2);
+  const subcommand = (group?.options || rootOptions).find((option) => option.type === 1);
+  return {
+    group: group?.name || "",
+    name: subcommand?.name || "",
+    options: subcommand?.options || [],
+  };
 }
 
 function optionValue(options, name) {
@@ -104,7 +106,7 @@ function optionValue(options, name) {
   return option ? option.value : undefined;
 }
 
-async function handleWeatherCommand(interaction, env) {
+async function handleArtemizCommand(interaction, env) {
   const userId = interaction.member?.user?.id || interaction.user?.id || "";
   if (interaction.guild_id !== env.WEATHER_GUILD_ID
       || userId !== env.WEATHER_ALLOWED_USER_ID) {
@@ -112,7 +114,7 @@ async function handleWeatherCommand(interaction, env) {
   }
 
   const command = commandOptions(interaction);
-  if (command.name === "start") {
+  if (command.group === "weather" && command.name === "start") {
     const event = optionValue(command.options, "event");
     const multiplier = Number(optionValue(command.options, "multiplier"));
     const durationMinutes = Number(optionValue(command.options, "duration_minutes"));
@@ -131,7 +133,7 @@ async function handleWeatherCommand(interaction, env) {
     }
   }
 
-  if (command.name === "stop") {
+  if (command.group === "weather" && command.name === "stop") {
     try {
       await callState(env, "/stop", {});
       return interactionReply("Admin weather event ended. The game returned to its normal weather cycle.");
@@ -140,7 +142,7 @@ async function handleWeatherCommand(interaction, env) {
     }
   }
 
-  if (command.name === "status") {
+  if (command.group === "weather" && command.name === "status") {
     try {
       const state = await callState(env, "/state");
       if (state.mode === "event" && EVENT_NAMES[state.event]) {
@@ -154,7 +156,33 @@ async function handleWeatherCommand(interaction, env) {
     }
   }
 
-  return interactionReply("Unknown weather command.");
+  if (command.group === "message" && command.name === "send") {
+    const message = String(optionValue(command.options, "text") || "").trim();
+    const rawDuration = optionValue(command.options, "duration_minutes");
+    const durationMinutes = rawDuration === undefined ? 5 : Number(rawDuration);
+    if (!message || message.length > MAX_ANNOUNCEMENT_LENGTH
+        || !Number.isInteger(durationMinutes) || durationMinutes < 1 || durationMinutes > 120) {
+      return interactionReply("Enter a message of 1–500 characters and a duration of 1–120 minutes.");
+    }
+    try {
+      const state = await callState(env, "/announce", { message, durationMinutes });
+      const expiresIn = Math.max(1, Math.ceil((state.announcement.expiresAtMs - state.serverTimeMs) / 60000));
+      return interactionReply(`Announcement sent to active game clients for ${expiresIn} minute(s).`);
+    } catch (_) {
+      return interactionReply("The Artemiz relay could not send this announcement. Please try again.");
+    }
+  }
+
+  if (command.group === "message" && command.name === "clear") {
+    try {
+      await callState(env, "/clear-announcement", {});
+      return interactionReply("The active game announcement was cleared.");
+    } catch (_) {
+      return interactionReply("The Artemiz relay could not clear this announcement. Please try again.");
+    }
+  }
+
+  return interactionReply("Unknown Artemiz game command.");
 }
 
 async function handleDiscordInteraction(request, env) {
@@ -176,10 +204,10 @@ async function handleDiscordInteraction(request, env) {
   if (interaction.type === 1) return jsonResponse(200, { type: 1 });
   if (interaction.type !== 2) return jsonResponse(400, { error: "Unsupported interaction type" });
   if (!env.WEATHER_GUILD_ID || !env.WEATHER_ALLOWED_USER_ID) {
-    return interactionReply("The weather command is not configured yet.");
+    return interactionReply("The Artemiz command is not configured yet.");
   }
-  if (interaction.data?.name !== "weather") return interactionReply("Unknown command.");
-  return handleWeatherCommand(interaction, env);
+  if (interaction.data?.name !== "artemiz") return interactionReply("Unknown command.");
+  return handleArtemizCommand(interaction, env);
 }
 
 export class WeatherState {
@@ -187,7 +215,7 @@ export class WeatherState {
     this.ctx = ctx;
   }
 
-  localState(revision) {
+  localState(revision, announcement = null) {
     return {
       mode: "local",
       event: "",
@@ -195,6 +223,7 @@ export class WeatherState {
       startedAtMs: 0,
       endsAtMs: 0,
       revision,
+      announcement,
     };
   }
 
@@ -203,9 +232,18 @@ export class WeatherState {
     if (!state) {
       state = this.localState(0);
       await this.ctx.storage.put("weather-state", state);
-    } else if (state.mode === "event" && state.endsAtMs <= Date.now()) {
-      state = this.localState(state.revision + 1);
-      await this.ctx.storage.put("weather-state", state);
+    } else {
+      const now = Date.now();
+      const announcement = state.announcement && state.announcement.expiresAtMs > now
+        ? state.announcement : null;
+      const eventExpired = state.mode === "event" && state.endsAtMs <= now;
+      if (eventExpired) {
+        state = this.localState(state.revision + 1, announcement);
+        await this.ctx.storage.put("weather-state", state);
+      } else if (state.announcement !== announcement || !Object.prototype.hasOwnProperty.call(state, "announcement")) {
+        state = { ...state, announcement };
+        await this.ctx.storage.put("weather-state", state);
+      }
     }
     return { ...state, serverTimeMs: Date.now() };
   }
@@ -240,6 +278,7 @@ export class WeatherState {
         startedAtMs,
         endsAtMs: startedAtMs + durationMinutes * 60_000,
         revision: previous.revision + 1,
+        announcement: previous.announcement || null,
       };
       await this.ctx.storage.put("weather-state", state);
       return jsonResponse(200, { ...state, serverTimeMs: Date.now() });
@@ -247,7 +286,45 @@ export class WeatherState {
 
     if (request.method === "POST" && path === "/stop") {
       const previous = await this.currentState();
-      const state = this.localState(previous.revision + 1);
+      const state = this.localState(previous.revision + 1, previous.announcement || null);
+      await this.ctx.storage.put("weather-state", state);
+      return jsonResponse(200, { ...state, serverTimeMs: Date.now() });
+    }
+
+    if (request.method === "POST" && path === "/announce") {
+      let payload;
+      try {
+        payload = await request.json();
+      } catch (_) {
+        return jsonResponse(400, { error: "Invalid JSON" });
+      }
+      const message = typeof payload.message === "string" ? payload.message.trim() : "";
+      const durationMinutes = Number(payload.durationMinutes);
+      if (!message || message.length > MAX_ANNOUNCEMENT_LENGTH
+          || !Number.isInteger(durationMinutes) || durationMinutes < 1 || durationMinutes > 120) {
+        return jsonResponse(400, { error: "Invalid announcement" });
+      }
+      const previous = await this.currentState();
+      const now = Date.now();
+      const { serverTimeMs: _serverTimeMs, ...baseState } = previous;
+      const state = {
+        ...baseState,
+        revision: previous.revision + 1,
+        announcement: {
+          id: crypto.randomUUID(),
+          text: message,
+          createdAtMs: now,
+          expiresAtMs: now + durationMinutes * 60_000,
+        },
+      };
+      await this.ctx.storage.put("weather-state", state);
+      return jsonResponse(200, { ...state, serverTimeMs: Date.now() });
+    }
+
+    if (request.method === "POST" && path === "/clear-announcement") {
+      const previous = await this.currentState();
+      const { serverTimeMs: _serverTimeMs, ...baseState } = previous;
+      const state = { ...baseState, revision: previous.revision + 1, announcement: null };
       await this.ctx.storage.put("weather-state", state);
       return jsonResponse(200, { ...state, serverTimeMs: Date.now() });
     }
