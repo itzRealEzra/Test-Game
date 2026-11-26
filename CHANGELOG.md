@@ -4,6 +4,7 @@
 
 ### Device and interface
 
+- Added a Discord weather relay for the modded client. The Discord bot accepts guild-scoped `/weather start`, `/weather status`, and `/weather stop` commands from one configured user; the Android app polls a read-only LAN endpoint and applies the selected event multiplier.
 - Added automatic keep-screen-on behavior while the game activity is open. It has no toggle.
 - Reworked the Weather panel to use the game's `contentbox` background, native colors, and Linotte fonts. It now shows an event icon, effect, live time remaining, progress bar, and opening/pulse animations. Calm weather continues to hide the next-event forecast.
 - Rebuilt the Base Camp reward list as a scrollable, progress-aware view with claimed, next, and locked labels, using the original in-game reward descriptions.

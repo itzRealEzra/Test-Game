@@ -1,0 +1,5 @@
+weather-bridge/.env
+weather-bridge/.venv/
+weather-bridge/weather_state.json
+weather-bridge/__pycache__/
+weather-bridge/*.pyc
