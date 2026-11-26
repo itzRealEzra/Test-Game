@@ -5,6 +5,7 @@
 ### Device and interface
 
 - Added the local Discord weather bridge and a Cloudflare Worker deployment option. The Worker handles signed `/weather start`, `/weather status`, and `/weather stop` interactions, stores state in a Durable Object, and serves a read-only HTTPS endpoint so weather commands can work while the PC is off.
+- Built the configured Cloudflare Worker URL into the Android client by default. Upgrades migrate the prior default PC relay URL, while custom relay URLs are preserved.
 - Added automatic keep-screen-on behavior while the game activity is open. It has no toggle.
 - Reworked the Weather panel to use the game's `contentbox` background, native colors, and Linotte fonts. It now shows an event icon, effect, live time remaining, progress bar, and opening/pulse animations. Calm weather continues to hide the next-event forecast.
 - Rebuilt the Base Camp reward list as a scrollable, progress-aware view with claimed, next, and locked labels, using the original in-game reward descriptions.

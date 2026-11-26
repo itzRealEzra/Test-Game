@@ -33,7 +33,7 @@ The Worker does not need a Discord bot token. It uses the app's public key to va
 
    Discord verifies the endpoint with a signed PING. This Worker verifies Ed25519 signatures and replies to PINGs. The existing `/weather` commands stay registered; Discord will deliver their interactions to this URL instead of the Gateway bot.
 
-5. In the mod menu, open **Etc → Discord Weather Relay** and replace the PC address with the Worker base URL, without `/interactions`, for example `https://artemiz-weather-relay.<your-account-subdomain>.workers.dev`. The Android app appends `/v1/weather/state` itself.
+5. The current Android release has `https://artemiz-weather-relay.artemizweather.workers.dev` built in and migrates the old default PC address on upgrade. If your Worker has a different URL, enter its base URL in **Etc → Discord Weather Relay** without `/interactions`; the Android app appends `/v1/weather/state` itself.
 6. Check `https://<worker-url>/health`, then use `/weather status` in Discord Web. Once the cloud path works, stop the PC bridge.
 
 The Durable Object state is persistent and automatically returns to local weather after the configured event end time. Only signed Discord interactions from the configured guild and user can write state. The phone endpoint is read-only.
