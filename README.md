@@ -11,9 +11,9 @@ Progress continues to save on the device. Google Play cloud-save restore is disa
 
 ## Online in-place updates
 
-Artemiz checks the public update.json manifest during startup. You can also check from **Home → Check for Updates** inside the game. The updater chooses the ARM64 or ARMv7 XAPK for the device, verifies the bundle's SHA-256, stages all APK splits together, and opens Android's installer. Android may first ask you to allow Artemiz to request installs; the system installer then asks you to confirm the update.
+Artemiz checks the public update.json manifest on every launch and keeps **Continue to Game** disabled until the check finishes. If an update is available, it offers the update before gameplay. If the device is offline or the check fails, Continue becomes available. There is no in-game manual update button. The updater chooses the ARM64 or ARMv7 XAPK for the device, verifies the bundle's SHA-256, stages all APK splits together, and opens Android's installer. Android may first ask you to allow Artemiz to request installs; the system installer then asks you to confirm the update.
 
-The updater first shipped in version 660. Version 660 is a one-time update for players on version 659; install it over the existing app with an XAPK installer or `adb install-multiple -r` to keep the local save. Version 662 and later can be downloaded and applied from inside the game. Updates must use a higher version code and the same signing key as the installed build.
+The updater first shipped in version 660. Version 660 is a one-time update for players on version 659; install it over the existing app with an XAPK installer or `adb install-multiple -r` to keep the local save. Version 663 and later are checked automatically at launch, before Continue is enabled. Updates must use a higher version code and the same signing key as the installed build.
 
 The manifest and XAPKs are served from this repository's public main branch. Keep the repository public while clients use these URLs; if you make it private, move update.json and both XAPKs to a public host such as Cloudflare R2 and change the built-in manifest URL.
 
@@ -21,7 +21,7 @@ The manifest and XAPKs are served from this repository's public main branch. Kee
 
 Each three-minute slot randomly selects an event and a stable 2×–50× multiplier; the selection remains fixed for that slot. Events last two minutes, followed by one calm minute. Astral Surge boosts XP across all skills; Verdant Bloom speeds crop growth and multiplies normal and Golden Sunflower harvests; Fortune Squall boosts monster drop chance, capped at 100%; Harvest Tide boosts Fishing, Forestry, and Mining yields; Artisan Ember boosts Cooking, Crafting, Firemaking, Fletching, and Alchemy outputs; Shadowveil boosts Thieving loot; Explorer's Aurora boosts Discovery rewards; Warfront boosts combat damage and attack speed while reducing incoming damage by up to 95%.
 
-The Weather tab and detail panel use the game's `contentbox` surface, native colors and Linotte fonts. The panel shows the current event icon, effect, remaining time and a live progress bar, with a short entrance and icon animation. Calm weather has its own icon and hides the random next-event forecast. In-game notices appear when an event starts or ends; the game stays quiet on first attach and does not replay transitions from time spent closed.
+The Weather tab and detail panel use the game's `contentbox` surface, native colors and Linotte fonts. The panel shows the current event icon, effect, remaining time and a live progress bar, with a short entrance and icon animation. Calm weather has its own icon and hides the random next-event forecast. In-game notices follow the active event identity, so a long admin event is not restarted or reported as ended when the local random cycle rolls over. The game stays quiet on first attach and does not replay transitions from time spent closed.
 
 ## Discord weather commands
 
@@ -29,11 +29,16 @@ The [Cloudflare Worker](weather-bridge/cloudflare/README.md) URL is built into t
 
 Combat loot stays accumulated while the selected monster name and area remain the same, and resets when the target changes. The battle controls dispatch by their actual view IDs: Collect Loot calls the game's loot-claim handler, while Leave stops the combat timer before collecting drops and returning to the battle list. This avoids the shared click-selector sending either button to an unrelated Slayer action.
 
-## Latest update — 2026-11-26
+## Latest update — 2026-11-26 (v663)
+
+- Raised the shared skill XP cap to the level-500 threshold (110,882,942,772 XP) and removed the remaining 2,000,000,000 clamps from skill XP rendering.
+- Fixed weather notices for long admin events: the two-hour event no longer produces false end/start notices at each three-minute local-cycle boundary, and a genuine event change uses one notice.
+- Update checks now finish before Continue to Game is enabled on launch. The Home-screen Check for Updates button was removed; offline or failed checks still let the player continue.
+- Installed and committed the v663 update without launching the game.
 
 - Removed the daily safe cracking limit and stopped safe cracks from consuming the daily tally; hid the daily limit labels.
-- Fixed the Continue to Game crash and put the manual update check on the game Home screen. Updates are checksum-verified and installed through Android's Package Installer without clearing local app data.
-- Replaced the stale Welcome What's New text with a current v662 summary.
+- Fixed the Continue to Game crash and added checksum-verified in-place updates through Android's Package Installer without clearing local app data.
+- Replaced the stale Welcome What's New text with current v663 release notes.
 - Disabled automatic Google Play cloud-save restore and hid its sign-in/backup entry points; local character creation and on-device saving remain available.
 - Anti-AFK keeps the screen on while the game is open. There is no menu toggle.
 - Added the Discord weather bridge and Android relay client. Remote events set the active weather and multiplier, expire automatically, and return to the normal cycle when stopped.
@@ -42,10 +47,10 @@ Combat loot stays accumulated while the selected monster name and area remain th
 - Skill thresholds preserve the original values through level 140, then rise by a fixed 0.5% of the level-140 XP step for each later level. The shared curve reaches level 500 at 110,882,942,772 total XP.
 - The Base Camp reward view now shows the game's real reward descriptions in a scrollable list, with claimed, next and locked states plus progress. It does not invent or change reward effects.
 - The new [CHANGELOG.md](CHANGELOG.md) records the current and prior mod features.
-- The updated local-only ARMv7 package was installed with `adb install-multiple -r` on the connected TECNO KE5 (version `OB662.261126.0`). The game was not launched.
+- The updated local-only ARMv7 package was installed with `adb install-multiple -r` on the connected TECNO KE5 (version `OB663.261126.0`). The game was not launched.
 - The Discord bot still needs its local `.env` token and server ID before slash commands can connect; credentials must not be shared in chat or committed.
 
 ## SHA-256
 
-- `CherryTree-Modded.xapk`: `58F775A1C9BFA86824F32CD5EBC28001CEE09DEBB58B0BF33C042C68FCACC724`
-- `Artemiz-Android32.xapk`: `9BBFDB4CA099BB495F5394FFB5E5866D38BA2034E286CD3C260F2E37DC12CD36`
+- `CherryTree-Modded.xapk`: `02048D7478DBE43B0F74CC66D768176B033E997F8963672B29DC74005B0F7095`
+- `Artemiz-Android32.xapk`: `83051D16572E0357A6C1096B8724A10EB06051152E7B0B08CEE039FAF7D7C154`

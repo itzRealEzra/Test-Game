@@ -2,6 +2,14 @@
 
 ## 2026-11-26
 
+### v663 follow-up
+
+- Removed the shared 2,000,000,000 XP ceiling. Every skill now uses the final threshold in the extended level-500 curve (110,882,942,772 XP), including its skill-card display path.
+- Weather notices now compare event identity and actual admin start/end times. A 50×, 120-minute admin event no longer triggers false end/start popups when the separate three-minute local weather slot changes; actual event replacement posts one concise change notice.
+- The startup update check now completes before **Continue to Game** is enabled. The Home-screen manual update button and its callback were removed. Failed/offline checks release Continue.
+- Updated the Welcome screen's What's New and release metadata to v663.
+- Built ARM64 and ARMv7 v663 XAPKs with the existing signing key, verified the base signature and package alignment, and installed the ARMv7 splits in place without launching the game.
+
 ### Device and interface
 
 - Completely removed daily Safecracking usage: opening and cracking safes no longer increments the daily tally, neither safe-opening nor lock-breaking checks a cap, and the remaining-safes labels are hidden.

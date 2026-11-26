@@ -61,12 +61,29 @@ public final class GameUpdater {
         synchronized (LOCK) {
             if (checking || downloading) {
                 if (manual) showToast(activity, "An update check is already running.");
+                else finishWelcomeUpdateCheck(activity);
                 return;
             }
             checking = true;
         }
         if (manual) showToast(activity, "Checking for Artemiz updates…");
         EXECUTOR.execute(new UpdateCheckTask(activity, manual));
+    }
+
+    private static void finishWelcomeUpdateCheck(final Activity activity) {
+        if (activity == null) return;
+        MAIN.post(new Runnable() {
+            @Override public void run() {
+                if (activity.isFinishing() || activity.isDestroyed()) return;
+                try {
+                    activity.getClass().getMethod("onUpdateCheckFinished").invoke(activity);
+                } catch (NoSuchMethodException ignored) {
+                    // Other activities can use the updater without a Welcome continue button.
+                } catch (Exception error) {
+                    Log.w(TAG, "Could not re-enable Continue after the update check.", error);
+                }
+            }
+        });
     }
 
     private static UpdateInfo fetchLatestUpdate(Context context) throws Exception {
@@ -415,9 +432,11 @@ public final class GameUpdater {
                             .setPositiveButton("OK", null)
                             .show();
                 }
+                finishWelcomeUpdateCheck(activity);
                 return;
             }
             showUpdatePrompt(activity, latest);
+            finishWelcomeUpdateCheck(activity);
         }
     }
 
@@ -435,6 +454,7 @@ public final class GameUpdater {
             if (manual && !activity.isFinishing() && !activity.isDestroyed()) {
                 showToast(activity, "Couldn't check updates. Connect to the internet and try again.");
             }
+            finishWelcomeUpdateCheck(activity);
         }
     }
 

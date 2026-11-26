@@ -1,14 +1,14 @@
 {
   "package_name": "uk.playdrop.cherrytree_idletextrpg",
-  "version_code": 662,
-  "version_name": "OB662.261126.0",
-  "release_notes": "Fixed the Continue to Game crash, moved Check for Updates to the game Home screen, refreshed What's New, and removed safe cracking's daily tally. Local saves are preserved by in-place updates.",
+  "version_code": 663,
+  "version_name": "OB663.261126.0",
+  "release_notes": "Raised every skill's XP cap to its level-500 threshold, fixed false weather popups during long admin events, and made launch update checks finish before Continue to Game is enabled. Local saves are preserved by in-place updates.",
   "arm64": {
     "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/CherryTree-Modded.xapk",
-    "sha256": "58F775A1C9BFA86824F32CD5EBC28001CEE09DEBB58B0BF33C042C68FCACC724"
+    "sha256": "02048D7478DBE43B0F74CC66D768176B033E997F8963672B29DC74005B0F7095"
   },
   "armv7": {
     "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/Artemiz-Android32.xapk",
-    "sha256": "9BBFDB4CA099BB495F5394FFB5E5866D38BA2034E286CD3C260F2E37DC12CD36"
+    "sha256": "83051D16572E0357A6C1096B8724A10EB06051152E7B0B08CEE039FAF7D7C154"
   }
 }
