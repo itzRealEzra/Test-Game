@@ -6,6 +6,8 @@ weather-bridge/*.pyc
 weather-bridge/cloudflare/node_modules/
 weather-bridge/cloudflare/.dev.vars
 weather-bridge/cloudflare/.wrangler/
+release/*.apk
+release/*.xapk
 update-client/.deps/
 update-client/libs/
 update-client/build/

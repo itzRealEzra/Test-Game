@@ -1,10 +1,8 @@
 package uk.playdrop.cherrytree_idletextrpg;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Application;
 import android.app.PendingIntent;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -18,7 +16,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import android.widget.Toast;
+import java.lang.ref.WeakReference;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -54,21 +52,34 @@ public final class GameUpdater {
     private static boolean downloading;
     private static boolean lifecycleRegistered;
     private static UpdateInfo pendingPermissionUpdate;
+    private static volatile WeakReference<Activity> activeActivity = new WeakReference<>(null);
 
     private GameUpdater() { }
 
     public static void checkForUpdates(final Activity activity, final boolean manual) {
         if (activity == null || activity.isFinishing() || activity.isDestroyed()) return;
+        activeActivity = new WeakReference<>(activity);
         synchronized (LOCK) {
             if (checking || downloading) {
-                if (manual) showToast(activity, "An update check is already running.");
+                if (manual) showInGameNotice(activity, "UPDATE IN PROGRESS",
+                        "Artemiz is already checking or applying an update.", 2600L);
                 else finishWelcomeUpdateCheck(activity);
                 return;
             }
             checking = true;
         }
-        if (manual) showToast(activity, "Checking for Artemiz updates…");
-        EXECUTOR.execute(new UpdateCheckTask(activity, manual));
+        final GameUpdateOverlay overlay = GameUpdateOverlay.show(activity);
+        if (overlay != null) {
+            overlay.setState("CHECKING FOR UPDATES", "Looking for the latest Artemiz patch…", -1);
+        }
+        EXECUTOR.execute(new UpdateCheckTask(activity, manual, overlay));
+    }
+
+    private static void showInGameNotice(Activity activity, String title, String message,
+                                         long durationMs) {
+        if (activity == null || activity.isFinishing() || activity.isDestroyed()) return;
+        GameUpdateOverlay overlay = GameUpdateOverlay.show(activity);
+        if (overlay != null) overlay.showTransient(title, message, durationMs);
     }
 
     private static void finishWelcomeUpdateCheck(final Activity activity) {
@@ -148,23 +159,29 @@ public final class GameUpdater {
         return info.versionName == null ? "current build" : info.versionName;
     }
 
-    private static void confirmInstallPermission(final Activity activity, final UpdateInfo update) {
+    private static void confirmInstallPermission(final Activity activity, final UpdateInfo update,
+                                                GameUpdateOverlay overlay) {
         if (Build.VERSION.SDK_INT < 26
                 || activity.getPackageManager().canRequestPackageInstalls()) {
-            downloadAndInstall(activity, update);
+            downloadAndInstall(activity, update, overlay);
             return;
         }
-        new AlertDialog.Builder(activity)
-                .setTitle("Allow game updates")
-                .setMessage("Android needs permission for Artemiz to request updates. "
-                        + "Artemiz will apply the patch automatically; Android may still ask "
-                        + "you to confirm the installation.")
-                .setPositiveButton("Open Settings", (dialog, which) -> {
+        if (overlay == null) overlay = GameUpdateOverlay.show(activity);
+        final GameUpdateOverlay permissionOverlay = overlay;
+        if (permissionOverlay == null) {
+            finishWelcomeUpdateCheck(activity);
+            return;
+        }
+        permissionOverlay.showPermission(
+                "Allow Artemiz to request its signed game update. Android may still ask you to confirm installation.",
+                new Runnable() {
+                    @Override public void run() {
                     synchronized (LOCK) {
                         pendingPermissionUpdate = update;
                     }
                     registerLifecycleWatcher(activity);
                     try {
+                        permissionOverlay.dismissImmediately();
                         Intent settings = new Intent(
                                 "android.settings.MANAGE_UNKNOWN_APP_SOURCES",
                                 Uri.parse("package:" + activity.getPackageName()));
@@ -173,13 +190,18 @@ public final class GameUpdater {
                         synchronized (LOCK) {
                             pendingPermissionUpdate = null;
                         }
-                        showToast(activity, "Open Android settings and allow Artemiz to request updates.");
+                        showInGameNotice(activity, "UPDATE PERMISSION REQUIRED",
+                                "Open Android settings and allow Artemiz to request updates.", 4200L);
                         finishWelcomeUpdateCheck(activity);
                     }
-                })
-                .setNegativeButton("Cancel", (dialog, which) -> finishWelcomeUpdateCheck(activity))
-                .setOnCancelListener(dialog -> finishWelcomeUpdateCheck(activity))
-                .show();
+                }
+                }, new Runnable() {
+                    @Override public void run() {
+                        permissionOverlay.showTransient("UPDATE PAUSED",
+                                "You can allow updates from Android settings later.", 2400L);
+                        finishWelcomeUpdateCheck(activity);
+                    }
+                });
     }
 
     private static void registerLifecycleWatcher(Activity activity) {
@@ -195,6 +217,7 @@ public final class GameUpdater {
                 @Override public void onActivityDestroyed(Activity a) { }
                 @Override public void onActivityResumed(Activity resumed) {
                     if (!PACKAGE_NAME.equals(resumed.getPackageName()) || Build.VERSION.SDK_INT < 26) return;
+                    activeActivity = new WeakReference<>(resumed);
                     final UpdateInfo pending;
                     synchronized (LOCK) {
                         pending = pendingPermissionUpdate;
@@ -206,9 +229,10 @@ public final class GameUpdater {
                     }
                     if (pending == null) return;
                     if (resumed.getPackageManager().canRequestPackageInstalls()) {
-                        downloadAndInstall(resumed, pending);
+                        downloadAndInstall(resumed, pending, null);
                     } else {
-                        showToast(resumed, "Install permission was not enabled. The patch will retry next launch.");
+                        showInGameNotice(resumed, "UPDATE PERMISSION NOT ENABLED",
+                                "The patch will retry when you allow Artemiz to install updates.", 4200L);
                         finishWelcomeUpdateCheck(resumed);
                     }
                 }
@@ -217,24 +241,24 @@ public final class GameUpdater {
         }
     }
 
-    private static void downloadAndInstall(final Activity activity, final UpdateInfo update) {
+    private static void downloadAndInstall(final Activity activity, final UpdateInfo update,
+                                          GameUpdateOverlay overlay) {
         synchronized (LOCK) {
             if (downloading) return;
             downloading = true;
         }
-        final ProgressDialog progress = new ProgressDialog(activity);
-        progress.setTitle("Updating Artemiz");
-        progress.setMessage("Downloading and applying patch " + update.versionName + "…");
-        progress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        progress.setIndeterminate(true);
-        progress.setCancelable(false);
-        progress.show();
-
+        activeActivity = new WeakReference<>(activity);
+        final GameUpdateOverlay progress = overlay == null
+                ? GameUpdateOverlay.show(activity) : overlay;
+        if (progress != null) {
+            progress.setState("PREPARING UPDATE " + update.versionName,
+                    "Downloading and verifying the small game patch…", -1);
+        }
         EXECUTOR.execute(new DownloadUpdateTask(activity, update, progress));
     }
 
     private static File downloadPatch(Context context, UpdateInfo update,
-            final ProgressDialog progress) throws Exception {
+            final GameUpdateOverlay progress) throws Exception {
         HttpURLConnection connection = openHttps(update.url, 20000, 30000);
         File output = new File(context.getCacheDir(),
                 "artemiz-update-" + update.fromVersionCode + "-to-" + update.versionCode + ".patch.zip");
@@ -245,8 +269,8 @@ public final class GameUpdater {
             if (expectedLength > MAX_PATCH_BYTES) throw new IOException("Update patch is too large.");
             if (expectedLength > 0) {
                 MAIN.post(() -> {
-                    progress.setIndeterminate(false);
-                    progress.setProgress(0);
+                    if (progress != null) progress.setState("DOWNLOADING PATCH",
+                            "Receiving and checking the update archive…", 0);
                 });
             }
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -263,7 +287,8 @@ public final class GameUpdater {
                     file.write(buffer, 0, count);
                     if (expectedLength > 0 && total - lastProgress > 512L * 1024L) {
                         final int percent = (int) Math.min(100L, total * 100L / expectedLength);
-                        MAIN.post(() -> progress.setProgress(percent));
+                        if (progress != null) progress.setState("DOWNLOADING PATCH",
+                                "Receiving and checking the update archive…", percent);
                         lastProgress = total;
                     }
                 }
@@ -280,8 +305,8 @@ public final class GameUpdater {
         }
     }
 
-    private static void applyAndStagePatch(Context context, File patchBundle, UpdateInfo update)
-            throws Exception {
+    private static void applyAndStagePatch(Context context, File patchBundle, UpdateInfo update,
+                                           GameUpdateOverlay overlay) throws Exception {
         if (installedVersionCode(context) != update.fromVersionCode) {
             throw new IOException("Installed version changed before patching.");
         }
@@ -330,6 +355,11 @@ public final class GameUpdater {
                         || !seenIds.add(id) || !seenFiles.add(name)) {
                     throw new IOException("Patch contains invalid split metadata.");
                 }
+                if (overlay != null) {
+                    overlay.setState("APPLYING VERIFIED PATCH",
+                            "Rebuilding game file " + (i + 1) + " of " + parts.length() + "…",
+                            (i * 100) / parts.length());
+                }
 
                 File oldApk = findInstalledApk(installedApks, id);
                 if (oldApk == null || !oldApk.isFile()
@@ -364,6 +394,10 @@ public final class GameUpdater {
             }
 
             if (!seenIds.contains("base")) throw new IOException("Patch is missing the base APK.");
+            if (overlay != null) {
+                overlay.setState("PATCH VERIFIED",
+                        "Preparing the updated game files for installation…", 100);
+            }
             PackageInstaller installer = packageManager.getPackageInstaller();
             PackageInstaller.SessionParams params =
                     new PackageInstaller.SessionParams(PackageInstaller.SessionParams.MODE_FULL_INSTALL);
@@ -483,17 +517,24 @@ public final class GameUpdater {
         return value;
     }
 
-    private static void showToast(Context context, String message) {
-        Toast.makeText(context.getApplicationContext(), message, Toast.LENGTH_LONG).show();
+    private static void showReceiverNotice(Context context, String title, String message) {
+        Activity activity = activeActivity.get();
+        if (activity != null && !activity.isFinishing() && !activity.isDestroyed()) {
+            showInGameNotice(activity, title, message, 4200L);
+        } else {
+            Log.i(TAG, message);
+        }
     }
 
     private static final class UpdateCheckTask implements Runnable {
         private final Activity activity;
         private final boolean manual;
+        private final GameUpdateOverlay overlay;
 
-        UpdateCheckTask(Activity activity, boolean manual) {
+        UpdateCheckTask(Activity activity, boolean manual, GameUpdateOverlay overlay) {
             this.activity = activity;
             this.manual = manual;
+            this.overlay = overlay;
         }
 
         @Override public void run() {
@@ -501,10 +542,11 @@ public final class GameUpdater {
                 UpdateInfo latest = fetchLatestUpdate(activity);
                 long currentCode = installedVersionCode(activity);
                 String currentName = installedVersionName(activity);
-                MAIN.post(new UpdateCheckResult(activity, manual, latest, currentCode, currentName));
+                MAIN.post(new UpdateCheckResult(activity, manual, latest, currentCode,
+                        currentName, overlay));
             } catch (Exception error) {
                 Log.w(TAG, "Could not check the update manifest.", error);
-                MAIN.post(new UpdateCheckFailure(activity, manual));
+                MAIN.post(new UpdateCheckFailure(activity, manual, overlay));
             }
         }
     }
@@ -515,48 +557,54 @@ public final class GameUpdater {
         private final UpdateInfo latest;
         private final long currentCode;
         private final String currentName;
+        private final GameUpdateOverlay overlay;
 
         UpdateCheckResult(Activity activity, boolean manual, UpdateInfo latest,
-                long currentCode, String currentName) {
+                long currentCode, String currentName, GameUpdateOverlay overlay) {
             this.activity = activity;
             this.manual = manual;
             this.latest = latest;
             this.currentCode = currentCode;
             this.currentName = currentName;
+            this.overlay = overlay;
         }
 
         @Override public void run() {
             synchronized (LOCK) { checking = false; }
             if (activity.isFinishing() || activity.isDestroyed()) return;
             if (latest.versionCode <= currentCode) {
-                if (manual) {
-                    new AlertDialog.Builder(activity)
-                            .setTitle("You're up to date")
-                            .setMessage("Artemiz " + currentName
-                                    + " is the latest available version.")
-                            .setPositiveButton("OK", null)
-                            .show();
+                if (overlay != null) {
+                    overlay.showTransient("GAME IS UP TO DATE",
+                            "Artemiz " + currentName + " is the latest available version.",
+                            manual ? 3200L : 1500L);
                 }
                 finishWelcomeUpdateCheck(activity);
                 return;
             }
-            confirmInstallPermission(activity, latest);
+            confirmInstallPermission(activity, latest, overlay);
         }
     }
 
     private static final class UpdateCheckFailure implements Runnable {
         private final Activity activity;
         private final boolean manual;
+        private final GameUpdateOverlay overlay;
 
-        UpdateCheckFailure(Activity activity, boolean manual) {
+        UpdateCheckFailure(Activity activity, boolean manual, GameUpdateOverlay overlay) {
             this.activity = activity;
             this.manual = manual;
+            this.overlay = overlay;
         }
 
         @Override public void run() {
             synchronized (LOCK) { checking = false; }
-            if (manual && !activity.isFinishing() && !activity.isDestroyed()) {
-                showToast(activity, "Couldn't check updates. Connect to the internet and try again.");
+            if (!activity.isFinishing() && !activity.isDestroyed()) {
+                if (overlay != null) {
+                    overlay.showTransient("UPDATE CHECK FAILED",
+                            manual ? "Connect to the internet and retry. You can continue on this version."
+                                    : "Couldn't connect. You can continue on this version.",
+                            manual ? 4200L : 3000L);
+                }
             }
             finishWelcomeUpdateCheck(activity);
         }
@@ -565,9 +613,9 @@ public final class GameUpdater {
     private static final class DownloadUpdateTask implements Runnable {
         private final Activity activity;
         private final UpdateInfo update;
-        private final ProgressDialog progress;
+        private final GameUpdateOverlay progress;
 
-        DownloadUpdateTask(Activity activity, UpdateInfo update, ProgressDialog progress) {
+        DownloadUpdateTask(Activity activity, UpdateInfo update, GameUpdateOverlay progress) {
             this.activity = activity;
             this.update = update;
             this.progress = progress;
@@ -577,7 +625,11 @@ public final class GameUpdater {
             File download = null;
             try {
                 download = downloadPatch(activity, update, progress);
-                applyAndStagePatch(activity, download, update);
+                if (progress != null) {
+                    progress.setState("APPLYING VERIFIED PATCH",
+                            "Rebuilding and verifying Artemiz game files…", -1);
+                }
+                applyAndStagePatch(activity, download, update, progress);
                 download.delete();
                 MAIN.post(new InstallLaunchMessage(activity, progress));
             } catch (Exception error) {
@@ -592,35 +644,38 @@ public final class GameUpdater {
 
     private static final class InstallLaunchMessage implements Runnable {
         private final Activity activity;
-        private final ProgressDialog progress;
+        private final GameUpdateOverlay progress;
 
-        InstallLaunchMessage(Activity activity, ProgressDialog progress) {
+        InstallLaunchMessage(Activity activity, GameUpdateOverlay progress) {
             this.activity = activity;
             this.progress = progress;
         }
 
         @Override public void run() {
-            if (progress.isShowing()) progress.dismiss();
-            showToast(activity, "Patch applied. Finishing the update…");
+            if (progress != null) {
+                progress.showTransient("PATCH READY",
+                        "Opening Android's installer to finish the update…", 2200L);
+            }
             finishWelcomeUpdateCheck(activity);
         }
     }
 
     private static final class InstallFailureMessage implements Runnable {
         private final Activity activity;
-        private final ProgressDialog progress;
+        private final GameUpdateOverlay progress;
         private final Exception error;
 
-        InstallFailureMessage(Activity activity, ProgressDialog progress, Exception error) {
+        InstallFailureMessage(Activity activity, GameUpdateOverlay progress, Exception error) {
             this.activity = activity;
             this.progress = progress;
             this.error = error;
         }
 
         @Override public void run() {
-            if (progress.isShowing()) progress.dismiss();
             if (!activity.isFinishing() && !activity.isDestroyed()) {
-                showToast(activity, "Update failed: " + safeMessage(error));
+                String detail = "Update failed: " + safeMessage(error);
+                if (progress != null) progress.showTransient("UPDATE FAILED", detail, 5000L);
+                else showInGameNotice(activity, "UPDATE FAILED", detail, 5000L);
             }
             finishWelcomeUpdateCheck(activity);
         }
@@ -636,14 +691,17 @@ public final class GameUpdater {
                     confirm.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(confirm);
                 } else {
-                    showToast(context, "Open Android to confirm the game update.");
+                    showReceiverNotice(context, "INSTALL CONFIRMATION NEEDED",
+                            "Open Android to confirm the game update.");
                 }
             } else if (status == PackageInstaller.STATUS_SUCCESS) {
-                showToast(context, "Artemiz updated. Reopen the game if needed.");
+                showReceiverNotice(context, "UPDATE INSTALLED",
+                        "Artemiz updated. Reopen the game if needed.");
             } else {
                 String detail = intent.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE);
-                showToast(context, "Android could not install the update."
-                        + (detail == null ? "" : " " + detail));
+                showReceiverNotice(context, "INSTALL DID NOT COMPLETE",
+                        "Android could not install the update."
+                                + (detail == null ? "" : " " + detail));
             }
         }
     }

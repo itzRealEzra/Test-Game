@@ -2,6 +2,14 @@
 
 ## 2026-11-27
 
+### v666 in-game update and announcement overlays
+
+- Added an animated Artemiz update panel for launch checks, patch download progress, patch application, and update results instead of Android progress or alert dialogs.
+- Replaced Discord admin announcement dialogs with a compact dark glass-line card using the game's gold palette. It animates into the current game screen and fades away after a short display.
+- Left Android's required package-install confirmation flow intact; the update progress and status remain in-game.
+- Published only checksum-verified patch ZIPs to GitHub. Full APK and XAPK build outputs stay local.
+- Built ARM64 and ARMv7 patch targets from v664 and v665; no install or game launch was performed.
+
 ### v665 global events and community updates
 
 - Weather event slots now align to UTC epoch time, so clients use the same rotating event and multiplier instead of seeding the cycle on each install.

@@ -1,31 +1,41 @@
 {
   "package_name": "uk.playdrop.cherrytree_idletextrpg",
-  "version_code": 665,
-  "version_name": "OB665.261127.0",
-  "release_notes": "Weather now follows a shared UTC schedule, Fortune Squall improves loot chance and quantity across categories, and /artemiz adds global weather and in-game announcement commands. Community links are updated. Local saves are preserved by in-place updates.",
+  "version_code": 666,
+  "version_name": "OB666.261127.0",
+  "release_notes": "Update progress now appears in an animated Artemiz panel. Admin announcements use an in-game glass-line card that fades away. Local saves are preserved by patch updates.",
   "arm64": {
-    "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/CherryTree-Modded.xapk",
-    "sha256": "36D582154FB4E295111E4B76F9F48BFAEF4EDA7825E15761E2D1AA7826086D67",
     "deltas": {
       "664": {
         "from_version_code": 664,
-        "to_version_code": 665,
-        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/CherryTree-Modded-v664-to-v665.patch.zip",
-        "sha256": "2220AEDC4D63B499F4BAA16717BCA1A0F895AE2AE19C1202310D019A493E10E8",
-        "size_bytes": 979198
+        "to_version_code": 666,
+        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/CherryTree-Modded-v664-to-v666.patch.zip",
+        "sha256": "88368e611b44b57b8951dfd4499a6ec71056e04c7ba77bb1d8be8d96a83dd2f9",
+        "size_bytes": 1051323
+      },
+      "665": {
+        "from_version_code": 665,
+        "to_version_code": 666,
+        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/CherryTree-Modded-v665-to-v666.patch.zip",
+        "sha256": "ac7188b16083fe0542aa697bbf01a7de6f6bbebb4797f72844d42f42c43b070f",
+        "size_bytes": 863031
       }
     }
   },
   "armv7": {
-    "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/Artemiz-Android32.xapk",
-    "sha256": "101DF0B5544644D6AAE4B4D799B0266234F61F5387D92781B40B0A34C3C8F8E1",
     "deltas": {
       "664": {
         "from_version_code": 664,
-        "to_version_code": 665,
-        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/Artemiz-Android32-v664-to-v665.patch.zip",
-        "sha256": "5DB33E91470B88A2226C6985854D081B609F9802D7AF41F38A242F053F1F6844",
-        "size_bytes": 979202
+        "to_version_code": 666,
+        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/Artemiz-Android32-v664-to-v666.patch.zip",
+        "sha256": "17fc5b4238bb23af6bfebfbfa5db551182751864ff5efb7a9ad81377f0dcc745",
+        "size_bytes": 1051314
+      },
+      "665": {
+        "from_version_code": 665,
+        "to_version_code": 666,
+        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/Artemiz-Android32-v665-to-v666.patch.zip",
+        "sha256": "f4e23e789351a6b543418780d81f0651107d19910f5920f2307cea40d9b4b527",
+        "size_bytes": 863002
       }
     }
   }

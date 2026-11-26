@@ -1,9 +1,6 @@
-# Artemiz Android builds
+# Artemiz Android updates
 
-- `release/CherryTree-Modded.xapk` — ARM64 build.
-- `release/Artemiz-Android32.xapk` — ARMv7 32-bit build.
-
-Both XAPK bundles contain the Artemiz base APK and matching split APKs. Use an installer that supports XAPK packages.
+Full XAPK and APK build outputs stay local. GitHub publishes `update.json` and the small, checksum-verified patch archives only. The current patch release supports patch-enabled installs on versions 664 and 665 for ARM64 and ARMv7.
 
 ## Local-only saves
 
@@ -13,11 +10,11 @@ Progress continues to save on the device. Google Play cloud-save restore is disa
 
 Artemiz checks the public `update.json` manifest on every launch and keeps **Continue to Game** disabled until the check finishes. When a newer release has a matching patch for the installed version and device ABI, the updater automatically downloads that small patch archive, checks its SHA-256, reconstructs and verifies the base and split APKs, then stages them together through Android's Package Installer. It does not download the full XAPK. Offline or failed checks release Continue. See [the patch release guide](update-client/README.md) for preparing each ABI's delta.
 
-The patch client is now installed on the connected ARMv7 device as a v664 bootstrap; it was installed over the existing game with `adb install-multiple -r`, preserving local app data. The current public manifest remains v664, so a later release must publish a delta with `from_version_code: 664` under the matching ABI's `deltas` object. Updates must use a higher version code, include all APK splits, and use the same signing key as the installed build. Players who have not installed the patch-enabled bootstrap still need a full XAPK update first.
+The patch client accepts only a delta matching the installed version and ABI. Updates must use a higher version code, reconstruct every APK split, and use the same signing key as the installed build. The patch archives reconstruct the APK set on the device; no full APK or XAPK is published in this repository.
 
 The patch download and APK reconstruction happen automatically. Android can still require the user to allow Artemiz to request installs and confirm the update. This device runs Android 10, where PackageInstaller requires that confirmation; newer Android versions can allow user-action-free updates only when the platform's eligibility requirements are met. [Android's PackageInstaller API documents those conditions](https://developer.android.com/reference/android/content/pm/PackageInstaller.SessionParams#setRequireUserAction(int)).
 
-The manifest and XAPKs are served from this repository's public main branch. Keep the repository public while clients use these URLs; if you make it private, move update.json and both XAPKs to a public host such as Cloudflare R2 and change the built-in manifest URL.
+The manifest and patch archives are served from this repository's public main branch. Keep the repository public while clients use these URLs; if you make it private, move `update.json` and the patch archives to a public host such as Cloudflare R2 and change the built-in manifest URL. Android may still show its own confirmation when installing the rebuilt package; the download and patch progress display inside Artemiz.
 
 ## Weather and combat updates
 
@@ -37,6 +34,12 @@ Combat loot stays accumulated while the selected monster name and area remain th
 - Added global `/artemiz weather` controls and timed `/artemiz message send|clear` commands. Game announcements appear over the player's current screen and expire automatically.
 - Updated the social links: new Discord invite, owner's Facebook profile, and no YouTube or TikTok entries.
 - Built v665 as an automatic update patch for the v664 patch-enabled bootstrap. The APK has not been installed or launched; please test the patch through the in-game updater.
+
+## Latest update — 2026-11-27 (v666)
+
+- Replaced Android update dialogs with an animated in-game update panel for checking, downloading, verifying, and preparing patches.
+- Replaced the admin announcement dialog with a game-styled glass-line card that slides in and fades out after a short display.
+- Published patch archives only. No APK or XAPK files are included in the GitHub update.
 
 ### v663 update
 

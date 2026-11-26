@@ -9,7 +9,7 @@ $ErrorActionPreference = 'Stop'
 $sourceDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $dependencyDir = Join-Path $sourceDir '.deps'
 $buildDir = Join-Path $sourceDir 'build'
-$classesDir = Join-Path $buildDir 'classes'
+$classesDir = Join-Path $buildDir ("classes-" + [DateTime]::UtcNow.Ticks)
 $dexDir = Join-Path $buildDir ("dex-" + [DateTime]::UtcNow.Ticks)
 $compressJar = Join-Path $dependencyDir 'commons-compress-1.27.1.jar'
 $ioJar = Join-Path $dependencyDir 'commons-io-2.18.0.jar'
@@ -46,6 +46,7 @@ foreach ($dependency in $dependencies) {
 }
 
 $javaSources = @(
+    (Join-Path $sourceDir 'GameUpdateOverlay.java'),
     (Join-Path $sourceDir 'GameUpdater.java'),
     (Join-Path $sourceDir 'BsdiffPatch.java')
 )
