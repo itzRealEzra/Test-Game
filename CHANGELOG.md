@@ -4,8 +4,8 @@
 
 ### Device and interface
 
-- Removed the daily Safecracking cap from both opening a safe and breaking its locks. The remaining-safes labels are hidden.
-- Added an online Artemiz updater. Startup checks a version manifest; Mod Menu → Etc. → Check for Updates can check again. It downloads the matching split XAPK, verifies its SHA-256, and asks Android's Package Installer to update the existing app.
+- Completely removed daily Safecracking usage: opening and cracking safes no longer increments the daily tally, neither safe-opening nor lock-breaking checks a cap, and the remaining-safes labels are hidden.
+- Added an online Artemiz updater in v660 and published the v661 follow-up. Startup checks a version manifest; Mod Menu → Etc. → Check for Updates can check again. It downloads the matching split XAPK, verifies its SHA-256, and asks Android's Package Installer to update the existing app.
 - Switched to local-only saves: disabled automatic Google Play cloud-save restore and hid sign-in/cloud-save entry points plus the Grove online-account panel. Local character creation and on-device saves remain available.
 - Added the local Discord weather bridge and a Cloudflare Worker deployment option. The Worker handles signed `/weather start`, `/weather status`, and `/weather stop` interactions, stores state in a Durable Object, and serves a read-only HTTPS endpoint so weather commands can work while the PC is off.
 - Built the configured Cloudflare Worker URL into the Android client by default. Upgrades migrate the prior default PC relay URL, while custom relay URLs are preserved.
@@ -42,7 +42,7 @@
 ### Build and installation
 
 - Rebuilt and signature-verified the base APK and both XAPK bundles. XAPK archive integrity and manifest size checks passed.
-- Installed the ARMv7 package with `adb install-multiple -r` on the connected TECNO KE5. Package Manager reports version `OB660.261126.0` and the expected base, ARMv7, English, and mdpi splits.
+- Installed the ARMv7 v661 package with `adb install-multiple -r` on the connected TECNO KE5. Package Manager reports version `OB661.261126.0` and the expected base, ARMv7, English, and mdpi splits.
 - The game was not launched; runtime behavior of the new UI and progression changes has not been exercised in-game.
 
 ## Earlier updates
