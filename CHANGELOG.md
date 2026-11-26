@@ -4,6 +4,7 @@
 
 ### Device and interface
 
+- Switched to local-only saves: disabled automatic Google Play cloud-save restore and hid sign-in/cloud-save entry points plus the Grove online-account panel. Local character creation and on-device saves remain available.
 - Added the local Discord weather bridge and a Cloudflare Worker deployment option. The Worker handles signed `/weather start`, `/weather status`, and `/weather stop` interactions, stores state in a Durable Object, and serves a read-only HTTPS endpoint so weather commands can work while the PC is off.
 - Built the configured Cloudflare Worker URL into the Android client by default. Upgrades migrate the prior default PC relay URL, while custom relay URLs are preserved.
 - Added automatic keep-screen-on behavior while the game activity is open. It has no toggle.
