@@ -9,6 +9,14 @@ Both XAPK bundles contain the Artemiz base APK and matching split APKs. Use an i
 
 Progress continues to save on the device. Google Play cloud-save restore is disabled, and the sign-in, cloud-save, and Grove online-account controls are hidden. Saves do not sync between devices.
 
+## Online in-place updates
+
+Artemiz checks the public update.json manifest when the startup screen completes its check. You can also check from **Mod Menu → Etc. → Check for Updates**. The updater chooses the ARM64 or ARMv7 XAPK for the device, verifies the bundle's SHA-256, stages all APK splits together, and opens Android's installer. Android may first ask you to allow Artemiz to request installs; the system installer then asks you to confirm the update.
+
+The updater is included in version 660. Version 660 is a one-time update for players on version 659; install it over the existing app with an XAPK installer or adb install-multiple -r to keep the local save. Later versions can be downloaded and applied from inside the game. Updates must use a higher version code and the same signing key as the installed build.
+
+The manifest and XAPKs are served from this repository's public main branch. Keep the repository public while clients use these URLs; if you make it private, move update.json and both XAPKs to a public host such as Cloudflare R2 and change the built-in manifest URL.
+
 ## Weather and combat updates
 
 Each three-minute slot randomly selects an event and a stable 2×–50× multiplier; the selection remains fixed for that slot. Events last two minutes, followed by one calm minute. Astral Surge boosts XP across all skills; Verdant Bloom speeds crop growth and multiplies normal and Golden Sunflower harvests; Fortune Squall boosts monster drop chance, capped at 100%; Harvest Tide boosts Fishing, Forestry, and Mining yields; Artisan Ember boosts Cooking, Crafting, Firemaking, Fletching, and Alchemy outputs; Shadowveil boosts Thieving loot; Explorer's Aurora boosts Discovery rewards; Warfront boosts combat damage and attack speed while reducing incoming damage by up to 95%.
@@ -23,6 +31,8 @@ Combat loot stays accumulated while the selected monster name and area remain th
 
 ## Latest update — 2026-11-26
 
+- Removed the daily safe cracking limit from both safe opening and lock breaking, and hid the daily limit labels.
+- Added a startup online update check and an Etc → Check for Updates action. Updates are checksum-verified and installed through Android's Package Installer without clearing local app data.
 - Disabled automatic Google Play cloud-save restore and hid its sign-in/backup entry points; local character creation and on-device saving remain available.
 - Anti-AFK keeps the screen on while the game is open. There is no menu toggle.
 - Added the Discord weather bridge and Android relay client. Remote events set the active weather and multiplier, expire automatically, and return to the normal cycle when stopped.
@@ -31,10 +41,10 @@ Combat loot stays accumulated while the selected monster name and area remain th
 - Skill thresholds preserve the original values through level 140, then rise by a fixed 0.5% of the level-140 XP step for each later level. The shared curve reaches level 500 at 110,882,942,772 total XP.
 - The Base Camp reward view now shows the game's real reward descriptions in a scrollable list, with claimed, next and locked states plus progress. It does not invent or change reward effects.
 - The new [CHANGELOG.md](CHANGELOG.md) records the current and prior mod features.
-- The updated local-only ARMv7 package was installed with `adb install-multiple -r` on the connected TECNO KE5 (version `OB659.181126.2835`). The game was not launched.
+- The updated local-only ARMv7 package was installed with `adb install-multiple -r` on the connected TECNO KE5 (version `OB660.261126.0`). The game was not launched.
 - The Discord bot still needs its local `.env` token and server ID before slash commands can connect; credentials must not be shared in chat or committed.
 
 ## SHA-256
 
-- `CherryTree-Modded.xapk`: `C259EA3942CA044F0D2C98F4604B7F27E4F22C707AACB82A9B481BF6C3F67B60`
-- `Artemiz-Android32.xapk`: `73B1F3AF8A3C56E7C8F83BF65EB1D6C5307722E4DBAA3FDBCCB8D70ABEC0BF16`
+- `CherryTree-Modded.xapk`: `3DE3F01200C1D8047143994AFCF9B5CCFBB8AFAAFF3D1E02C3428E0BE918C3C3`
+- `Artemiz-Android32.xapk`: `62AEDFA3D7FE065455CE0E034AC563FA5C7889BA602B188D30C8794983BC168B`
