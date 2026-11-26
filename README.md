@@ -13,7 +13,7 @@ The Weather tab and detail panel use the game's `contentbox` surface, native col
 
 ## Discord weather commands
 
-The optional [weather bridge](weather-bridge/README.md) runs on the PC and syncs `/weather start`, `/weather status`, and `/weather stop` with the modded Android client over the private Wi-Fi. The current TECNO install is prefilled with this PC's address (`http://192.168.0.106:8765`); change it under **Mod Menu → Etc. → Discord Weather Relay** if the PC gets a different address. The Discord bot token is stored only in the bridge's ignored local `.env` file. Setup requires the bot token and Discord server ID; the bridge also restricts commands to one configured Discord user. The phone-facing endpoint is read-only and does not connect to or modify the game's backend.
+The local [weather bridge](weather-bridge/README.md) runs on the PC and syncs `/weather start`, `/weather status`, and `/weather stop` over private Wi-Fi. To keep commands working when the PC is off, deploy the [Cloudflare Worker](weather-bridge/cloudflare/README.md) and change the Android relay URL to its HTTPS address. The cloud worker verifies Discord signatures and does not need a bot token. Both versions restrict commands to the configured server and user; the phone-facing endpoint is read-only and does not connect to or modify the game's backend.
 
 Combat loot stays accumulated while the selected monster name and area remain the same, and resets when the target changes. The battle controls dispatch by their actual view IDs: Collect Loot calls the game's loot-claim handler, while Leave stops the combat timer before collecting drops and returning to the battle list. This avoids the shared click-selector sending either button to an unrelated Slayer action.
 

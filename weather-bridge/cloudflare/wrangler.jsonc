@@ -1,0 +1,23 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "artemiz-weather-relay",
+  "main": "src/index.js",
+  "compatibility_date": "2026-11-26",
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "WEATHER_STATE",
+        "class_name": "WeatherState"
+      }
+    ]
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["WeatherState"]
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}

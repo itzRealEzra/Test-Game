@@ -1,6 +1,6 @@
 # Discord weather bridge
 
-This small Windows-hosted service connects Discord slash commands to the modded Android client while both devices are on the same private Wi-Fi. The bot connects outbound to Discord; no public server, paid host, or router port-forward is needed.
+This small Windows-hosted service connects Discord slash commands to the modded Android client while both devices are on the same private Wi-Fi. The bot connects outbound to Discord; no public server, paid host, or router port-forward is needed. For a relay that keeps working when this PC is off, see the [Cloudflare deployment](cloudflare/README.md).
 
 The relay exposes only a read-only weather-state endpoint to private-network clients. Weather changes can only be issued by the Discord bot, which checks both the configured server ID and one allowed Discord user ID. The Discord bot token stays on the PC in `.env` and is never placed in the APK.
 

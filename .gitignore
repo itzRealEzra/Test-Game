@@ -3,3 +3,6 @@ weather-bridge/.venv/
 weather-bridge/weather_state.json
 weather-bridge/__pycache__/
 weather-bridge/*.pyc
+weather-bridge/cloudflare/node_modules/
+weather-bridge/cloudflare/.dev.vars
+weather-bridge/cloudflare/.wrangler/
