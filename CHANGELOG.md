@@ -2,6 +2,12 @@
 
 ## 2026-11-26
 
+### v664 progression crash fix
+
+- Removed the skill progress bar's exact `long`-to-`int` conversions. Thresholds above 2,147,483,647 XP now render on a bounded 0–10,000 progress scale while XP totals and threshold math remain 64-bit.
+- Built and signature-checked ARM64 and ARMv7 v664 XAPK bundles; the base APK and all four splits report version code 664 and align correctly.
+- Published v664 in the update manifest for launch-time update testing. It was not installed.
+
 ### v663 follow-up
 
 - Removed the shared 2,000,000,000 XP ceiling. Every skill now uses the final threshold in the extended level-500 curve (110,882,942,772 XP), including its skill-card display path.

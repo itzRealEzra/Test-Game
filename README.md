@@ -13,7 +13,7 @@ Progress continues to save on the device. Google Play cloud-save restore is disa
 
 Artemiz checks the public update.json manifest on every launch and keeps **Continue to Game** disabled until the check finishes. If an update is available, it offers the update before gameplay. If the device is offline or the check fails, Continue becomes available. There is no in-game manual update button. The updater chooses the ARM64 or ARMv7 XAPK for the device, verifies the bundle's SHA-256, stages all APK splits together, and opens Android's installer. Android may first ask you to allow Artemiz to request installs; the system installer then asks you to confirm the update.
 
-The updater first shipped in version 660. Version 660 is a one-time update for players on version 659; install it over the existing app with an XAPK installer or `adb install-multiple -r` to keep the local save. Version 663 and later are checked automatically at launch, before Continue is enabled. Updates must use a higher version code and the same signing key as the installed build.
+The updater first shipped in version 660. Version 660 is a one-time update for players on version 659; install it over the existing app with an XAPK installer or `adb install-multiple -r` to keep the local save. Version 664 and later are checked automatically at launch, before Continue is enabled. Updates must use a higher version code and the same signing key as the installed build.
 
 The manifest and XAPKs are served from this repository's public main branch. Keep the repository public while clients use these URLs; if you make it private, move update.json and both XAPKs to a public host such as Cloudflare R2 and change the built-in manifest URL.
 
@@ -29,7 +29,12 @@ The [Cloudflare Worker](weather-bridge/cloudflare/README.md) URL is built into t
 
 Combat loot stays accumulated while the selected monster name and area remain the same, and resets when the target changes. The battle controls dispatch by their actual view IDs: Collect Loot calls the game's loot-claim handler, while Leave stops the combat timer before collecting drops and returning to the battle list. This avoids the shared click-selector sending either button to an unrelated Slayer action.
 
-## Latest update — 2026-11-26 (v663)
+## Latest update — 2026-11-26 (v664)
+
+- Fixed the skill XP bar crash above 2,147,483,647 XP. XP and thresholds stay 64-bit; the bar now calculates progress relative to the current level on a 0–10,000 scale.
+- Published the signed ARM64 and ARMv7 v664 bundles and update manifest for the built-in launch checker. This build was not installed so the auto-update can be tested.
+
+### v663 update
 
 - Raised the shared skill XP cap to the level-500 threshold (110,882,942,772 XP) and removed the remaining 2,000,000,000 clamps from skill XP rendering.
 - Fixed weather notices for long admin events: the two-hour event no longer produces false end/start notices at each three-minute local-cycle boundary, and a genuine event change uses one notice.
@@ -52,5 +57,5 @@ Combat loot stays accumulated while the selected monster name and area remain th
 
 ## SHA-256
 
-- `CherryTree-Modded.xapk`: `02048D7478DBE43B0F74CC66D768176B033E997F8963672B29DC74005B0F7095`
-- `Artemiz-Android32.xapk`: `83051D16572E0357A6C1096B8724A10EB06051152E7B0B08CEE039FAF7D7C154`
+- `CherryTree-Modded.xapk`: `9C45878646492D16C8FEE7E5B009E8F40F223E72A9E1D233B46BA29707741B53`
+- `Artemiz-Android32.xapk`: `B68A92546041C1F6F142F6209273B49D0018950F6A8F952B05B02FB1DA34EC15`

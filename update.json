@@ -1,14 +1,14 @@
 {
   "package_name": "uk.playdrop.cherrytree_idletextrpg",
-  "version_code": 663,
-  "version_name": "OB663.261126.0",
-  "release_notes": "Raised every skill's XP cap to its level-500 threshold, fixed false weather popups during long admin events, and made launch update checks finish before Continue to Game is enabled. Local saves are preserved by in-place updates.",
+  "version_code": 664,
+  "version_name": "OB664.261126.0",
+  "release_notes": "Fixed the skill XP progress bar crash above 2,147,483,647 XP. XP remains 64-bit and the bar now uses a scaled percentage within each level. Local saves are preserved by in-place updates.",
   "arm64": {
     "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/CherryTree-Modded.xapk",
-    "sha256": "02048D7478DBE43B0F74CC66D768176B033E997F8963672B29DC74005B0F7095"
+    "sha256": "9C45878646492D16C8FEE7E5B009E8F40F223E72A9E1D233B46BA29707741B53"
   },
   "armv7": {
     "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/Artemiz-Android32.xapk",
-    "sha256": "83051D16572E0357A6C1096B8724A10EB06051152E7B0B08CEE039FAF7D7C154"
+    "sha256": "B68A92546041C1F6F142F6209273B49D0018950F6A8F952B05B02FB1DA34EC15"
   }
 }
