@@ -11,9 +11,9 @@ Progress continues to save on the device. Google Play cloud-save restore is disa
 
 ## Online in-place updates
 
-Artemiz checks the public update.json manifest when the startup screen completes its check. You can also check from **Mod Menu → Etc. → Check for Updates**. The updater chooses the ARM64 or ARMv7 XAPK for the device, verifies the bundle's SHA-256, stages all APK splits together, and opens Android's installer. Android may first ask you to allow Artemiz to request installs; the system installer then asks you to confirm the update.
+Artemiz checks the public update.json manifest during startup. You can also check from **Home → Check for Updates** inside the game. The updater chooses the ARM64 or ARMv7 XAPK for the device, verifies the bundle's SHA-256, stages all APK splits together, and opens Android's installer. Android may first ask you to allow Artemiz to request installs; the system installer then asks you to confirm the update.
 
-The updater first shipped in version 660. Version 660 is a one-time update for players on version 659; install it over the existing app with an XAPK installer or `adb install-multiple -r` to keep the local save. Version 661 and later can be downloaded and applied from inside the game. Updates must use a higher version code and the same signing key as the installed build.
+The updater first shipped in version 660. Version 660 is a one-time update for players on version 659; install it over the existing app with an XAPK installer or `adb install-multiple -r` to keep the local save. Version 662 and later can be downloaded and applied from inside the game. Updates must use a higher version code and the same signing key as the installed build.
 
 The manifest and XAPKs are served from this repository's public main branch. Keep the repository public while clients use these URLs; if you make it private, move update.json and both XAPKs to a public host such as Cloudflare R2 and change the built-in manifest URL.
 
@@ -32,7 +32,8 @@ Combat loot stays accumulated while the selected monster name and area remain th
 ## Latest update — 2026-11-26
 
 - Removed the daily safe cracking limit and stopped safe cracks from consuming the daily tally; hid the daily limit labels.
-- Added a startup online update check and an Etc → Check for Updates action. Updates are checksum-verified and installed through Android's Package Installer without clearing local app data.
+- Fixed the Continue to Game crash and put the manual update check on the game Home screen. Updates are checksum-verified and installed through Android's Package Installer without clearing local app data.
+- Replaced the stale Welcome What's New text with a current v662 summary.
 - Disabled automatic Google Play cloud-save restore and hid its sign-in/backup entry points; local character creation and on-device saving remain available.
 - Anti-AFK keeps the screen on while the game is open. There is no menu toggle.
 - Added the Discord weather bridge and Android relay client. Remote events set the active weather and multiplier, expire automatically, and return to the normal cycle when stopped.
@@ -41,10 +42,10 @@ Combat loot stays accumulated while the selected monster name and area remain th
 - Skill thresholds preserve the original values through level 140, then rise by a fixed 0.5% of the level-140 XP step for each later level. The shared curve reaches level 500 at 110,882,942,772 total XP.
 - The Base Camp reward view now shows the game's real reward descriptions in a scrollable list, with claimed, next and locked states plus progress. It does not invent or change reward effects.
 - The new [CHANGELOG.md](CHANGELOG.md) records the current and prior mod features.
-- The updated local-only ARMv7 package was installed with `adb install-multiple -r` on the connected TECNO KE5 (version `OB661.261126.0`). The game was not launched.
+- The updated local-only ARMv7 package was installed with `adb install-multiple -r` on the connected TECNO KE5 (version `OB662.261126.0`). The game was not launched.
 - The Discord bot still needs its local `.env` token and server ID before slash commands can connect; credentials must not be shared in chat or committed.
 
 ## SHA-256
 
-- `CherryTree-Modded.xapk`: `C9DD55AAAD80E122BB9030E55882BCB5BD0EFE1D110594AFFA5E98CA630295C6`
-- `Artemiz-Android32.xapk`: `2701EB6559DFB6B09F830F6CC059D1956C9801BC09D234EFE3410FC15309B576`
+- `CherryTree-Modded.xapk`: `58F775A1C9BFA86824F32CD5EBC28001CEE09DEBB58B0BF33C042C68FCACC724`
+- `Artemiz-Android32.xapk`: `9BBFDB4CA099BB495F5394FFB5E5866D38BA2034E286CD3C260F2E37DC12CD36`

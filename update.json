@@ -1,14 +1,14 @@
 {
   "package_name": "uk.playdrop.cherrytree_idletextrpg",
-  "version_code": 661,
-  "version_name": "OB661.261126.0",
-  "release_notes": "Safe cracking no longer consumes or checks a daily limit. The local save is preserved by in-place updates.",
+  "version_code": 662,
+  "version_name": "OB662.261126.0",
+  "release_notes": "Fixed the Continue to Game crash, moved Check for Updates to the game Home screen, refreshed What's New, and removed safe cracking's daily tally. Local saves are preserved by in-place updates.",
   "arm64": {
     "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/CherryTree-Modded.xapk",
-    "sha256": "C9DD55AAAD80E122BB9030E55882BCB5BD0EFE1D110594AFFA5E98CA630295C6"
+    "sha256": "58F775A1C9BFA86824F32CD5EBC28001CEE09DEBB58B0BF33C042C68FCACC724"
   },
   "armv7": {
     "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/Artemiz-Android32.xapk",
-    "sha256": "2701EB6559DFB6B09F830F6CC059D1956C9801BC09D234EFE3410FC15309B576"
+    "sha256": "9BBFDB4CA099BB495F5394FFB5E5866D38BA2034E286CD3C260F2E37DC12CD36"
   }
 }
