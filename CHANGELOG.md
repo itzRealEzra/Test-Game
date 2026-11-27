@@ -2,6 +2,12 @@
 
 ## 2026-11-27
 
+### v673 Game entry and release notes
+
+- Preserved the known-good game DEX while rebuilding the v673 resource table, and isolated optional worker initialization so worker errors do not take down game entry.
+- Changed the What's New separators to Android newline escapes; the compiled resource now contains a separate line break before each bullet.
+- Built direct patch-only updates from v664 through v672 for ARM64 and ARMv7. Full APK/XAPK bundles remain local; no device was connected for runtime verification.
+
 ### v672 Inn workers and activity updates
 
 - Added an Inn panel with three hire offers that refresh every five minutes. Workers have rarity, traits, levels, and one active assignment at a time.
