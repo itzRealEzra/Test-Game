@@ -1,6 +1,6 @@
 # Artemiz Android updates
 
-Full XAPK and APK build outputs stay local. GitHub publishes `update.json` and the small, checksum-verified patch archives only. The current patch release supports patch-enabled installs on versions 664 through 669 for ARM64 and ARMv7.
+Full XAPK and APK build outputs stay local. GitHub publishes `update.json` and the small, checksum-verified patch archives only. The current patch release supports patch-enabled installs on versions 664 through 670 for ARM64 and ARMv7.
 
 ## Local-only saves
 

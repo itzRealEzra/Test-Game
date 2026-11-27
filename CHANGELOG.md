@@ -2,6 +2,12 @@
 
 ## 2026-11-27
 
+### v671 Cultivation panel layout
+
+- Replaced the full-screen Cultivation overlay with a centered, bounded panel matching the game’s other panels. The side navigation and top/bottom HUD stay visible behind it.
+- The panel uses the game content-box styling and closes when tapped outside.
+- Published patch-only direct updates from v664 through v670 for ARM64 and ARMv7.
+
 ### v670 cultivation screen and progression
 
 - Replaced the Cultivation dialog with a full-screen in-game panel and added generated cultivation icon and static meditation art.
