@@ -1,5 +1,14 @@
 # Changelog
 
+## 2026-11-28
+
+### v681 Worker roster and Farm crash fixes
+
+- Save new hires in the persistent worker roster before opening the Workers panel. Recover hires from the currently cached offer list when possible, and retry adding the Workers navigation entry after the game menu loads.
+- Restore the Farm controller's required Auto Replant view as hidden, keeping the control unavailable while preventing a null-view crash when Farming opens.
+- Built and signature-checked the v681 base and all four ARM64/ARMv7 language, density, and ABI splits. Both XAPK archives pass integrity and version metadata checks. Device/runtime testing was not performed.
+- Applied and verified all 34 direct patch-only updates for v664 through v680 on ARM64 and ARMv7; every reconstructed split matches its v681 target. APK/XAPK bundles remain local; no device installation was performed.
+
 ## 2026-11-27
 
 ### v680 Workers and cultivation fields
