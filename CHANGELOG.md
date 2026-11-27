@@ -2,6 +2,14 @@
 
 ## 2026-11-27
 
+### v670 cultivation screen and progression
+
+- Replaced the Cultivation dialog with a full-screen in-game panel and added generated cultivation icon and static meditation art.
+- Qi now accrues automatically, including up to 8 hours offline; gain increases by 5% after each successful breakthrough. Breakthrough attempts remain manual.
+- Added the Mortal Realm baseline and major breakthrough path into Qi Gathering Stage I–X and the remaining realms. Existing v669 cultivation saves are migrated once to preserve their displayed progress.
+- Kept the existing breakthrough costs, failure chance and Qi loss, plus the +20% Attack and Max Health ceilings.
+- Built patch-only direct updates from v664 through v669 for ARM64 and ARMv7; full APK/XAPK artifacts remain local.
+
 ### v669 navigation, Wishing Well, and Cultivation
 
 - Moved the live weather icon out of the skill XP bar and into Navigation immediately above My Profile. The row opens the existing weather details panel.
