@@ -2,6 +2,14 @@
 
 ## 2026-11-27
 
+### v678 Panel navigation and Inn fixes
+
+- Keep Cultivation and the Inn selected underneath the game's original navigation drawer when the hamburger is tapped. Selecting another navigation item closes the custom panel before the native screen switch.
+- Move the owned-worker roster above recruitment offers so newly hired workers are visible immediately.
+- Update the Inn refresh countdown once per second and preserve the five-minute offer refresh deadline.
+- Built and signature-checked the v678 base and all architecture/language/density splits. Installed v678 over the existing app on the connected TECNO phone; interactive checks were unavailable because the phone was locked.
+- Generated and validated 28 direct patch-only updates for v664 through v677 on ARM64 and ARMv7. No APK/XAPK is included in the repository.
+
 ### v677 Sidebar navigation fix
 
 - Added a larger transparent hamburger hit area that draws the game's original menu icon and calls its native Navigation handler. Cultivation and Inn close before the sidebar opens.
