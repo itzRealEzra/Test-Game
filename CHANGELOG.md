@@ -2,6 +2,14 @@
 
 ## 2026-11-28
 
+### v682 Farm, worker, and cultivation fixes
+
+- Replaced the mismatched herb seed art with individual seed icons and added Crop, Herb, and Tree field tabs so players can switch the plots they view and manage.
+- Hiring now leaves the player in the Inn and marks the offer as hired. Worker actions use game-styled panels instead of Android alert dialogs.
+- Farm skill progress and the Workers roster refresh in place; worker XP, levels, assignments, and trait previews stay current. Swift Hands, Bountiful Harvest, Seed Saver, and Quick Learner effects now match their descriptions and apply to the corresponding work.
+- Increased Qi requirements with realm progress. Cultivation continues storing Qi at the final stage and unlocks the “Half Immortal” title at Immortal Ascension Realm Stage X.
+- Built and signature-checked the v682 base and four split APKs. Prepared 36 direct patch-only updates for v664 through v681 on ARM64 and ARMv7; no APK/XAPK was added to the repository, and no device installation was performed.
+
 ### v681 Worker roster and Farm crash fixes
 
 - Save new hires in the persistent worker roster before opening the Workers panel. Recover hires from the currently cached offer list when possible, and retry adding the Workers navigation entry after the game menu loads.
