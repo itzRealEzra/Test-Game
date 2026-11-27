@@ -2,6 +2,14 @@
 
 ## 2026-11-27
 
+### v676 Weather and Inn UI fixes
+
+- Prevented repeated Weather taps from stacking hidden weather dialogs behind the visible panel.
+- Removed the Inn panel's extra `‹ Menu` row; tapping the original hamburger now closes the Inn before opening the game's navigation.
+- Fixed offer and owned-worker detail rows so portraits, traits, and controls receive visible width. Reduced portrait, padding, and button dimensions to make worker cards more compact.
+- Built and signature-checked the v676 base APK and all splits for ARM64 and ARMv7. Generated direct patch-only updates from v664 through v675. APK/XAPK bundles remain local; the game was not installed or launched.
+
+
 ### v675 Cultivation navigation and breakthrough controls
 
 - Removed the extra `‹ Menu` row from Cultivation so the game keeps its original hamburger navigation.

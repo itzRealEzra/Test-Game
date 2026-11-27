@@ -1,86 +1,93 @@
 {
   "package_name": "uk.playdrop.cherrytree_idletextrpg",
-  "version_code": 675,
-  "version_name": "OB675.261127.0",
-  "release_notes": "Cultivation now uses only the original game menu. The original hamburger closes the panel before opening navigation, and the breakthrough control remains responsive with clear insufficient-Qi feedback.",
+  "version_code": 676,
+  "version_name": "OB676.261127.0",
+  "release_notes": "Weather details now opens only one panel when tapped repeatedly. Inn cards show worker traits and hire controls in a compact layout, and the Inn uses the original game hamburger menu.",
   "arm64": {
     "deltas": {
       "664": {
         "from_version_code": 664,
-        "to_version_code": 675,
-        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/CherryTree-Modded-v664-to-v675.patch.zip",
-        "sha256": "865bee7029d98235f08e959936fcd238de3403b19dbe4804103044699cebec16",
-        "size_bytes": 6456107
+        "to_version_code": 676,
+        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/CherryTree-Modded-v664-to-v676.patch.zip",
+        "sha256": "83df70efe1866a7c6ca04848cae4c60e3eb9a0d6735d59b7bf83e2d3c9de2659",
+        "size_bytes": 6459671
       },
       "665": {
         "from_version_code": 665,
-        "to_version_code": 675,
-        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/CherryTree-Modded-v665-to-v675.patch.zip",
-        "sha256": "939c1e3fded33d9e168ba3962a3956fe9621f910382a0f70a7534d69b1d73551",
-        "size_bytes": 6429287
+        "to_version_code": 676,
+        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/CherryTree-Modded-v665-to-v676.patch.zip",
+        "sha256": "b069b2366b3cdc3d2b69c19353a74edce6de8316c51d588d3888c66685845431",
+        "size_bytes": 6435335
       },
       "666": {
         "from_version_code": 666,
-        "to_version_code": 675,
-        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/CherryTree-Modded-v666-to-v675.patch.zip",
-        "sha256": "624561bbefd6b4997483bb34b33e2afef2bb3e48d85072f4d648e40e979fdad6",
-        "size_bytes": 6426645
+        "to_version_code": 676,
+        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/CherryTree-Modded-v666-to-v676.patch.zip",
+        "sha256": "8d88e6fdb105e0a4966dfbfacb6fe2a2aff17cf92990a2ff55f32ad0cc3f4d0b",
+        "size_bytes": 6424207
       },
       "667": {
         "from_version_code": 667,
-        "to_version_code": 675,
-        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/CherryTree-Modded-v667-to-v675.patch.zip",
-        "sha256": "1e518b006d20e76b8e6bb4f9aa13e79ae369f4e77d08ddc2dc89171a57f96dc6",
-        "size_bytes": 6408206
+        "to_version_code": 676,
+        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/CherryTree-Modded-v667-to-v676.patch.zip",
+        "sha256": "2065c7fc707055088f4141fb9b8f75c2a6720b904e5806cb45e026d4a86056bb",
+        "size_bytes": 6412464
       },
       "668": {
         "from_version_code": 668,
-        "to_version_code": 675,
-        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/CherryTree-Modded-v668-to-v675.patch.zip",
-        "sha256": "aa3419dabfee13bb902663a7f2d589550a93680d6ddbeba8bdc847b745a9eb98",
-        "size_bytes": 6408054
+        "to_version_code": 676,
+        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/CherryTree-Modded-v668-to-v676.patch.zip",
+        "sha256": "ed9c17c172dd2235e736bbeb78001c08a3071368463c647f66850832c50b138e",
+        "size_bytes": 6410451
       },
       "669": {
         "from_version_code": 669,
-        "to_version_code": 675,
-        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/CherryTree-Modded-v669-to-v675.patch.zip",
-        "sha256": "ee745eeebfac4a652bf297d350d4d4dd3601754fa0560895953248e1046b1ff0",
-        "size_bytes": 6402238
+        "to_version_code": 676,
+        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/CherryTree-Modded-v669-to-v676.patch.zip",
+        "sha256": "7a06dd1a3fdbc96da533bd9f7f5f33f8659391b1b01e07563e2e29a76d5a0431",
+        "size_bytes": 6405994
       },
       "670": {
         "from_version_code": 670,
-        "to_version_code": 675,
-        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/CherryTree-Modded-v670-to-v675.patch.zip",
-        "sha256": "cbc1b33537bbeaf85135a7ccd6198c201dd39086b383ecb042db4d0cdace86ed",
-        "size_bytes": 5442763
+        "to_version_code": 676,
+        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/CherryTree-Modded-v670-to-v676.patch.zip",
+        "sha256": "dfe03c8e85cdd128a9dc1d8943da3d249a8072ee467d7f6b31cbc003a676c1af",
+        "size_bytes": 5461875
       },
       "671": {
         "from_version_code": 671,
-        "to_version_code": 675,
-        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/CherryTree-Modded-v671-to-v675.patch.zip",
-        "sha256": "1fcac110bf2d2246299ce149654f98d1dcfd2ded1567b380e84673e1fca6a989",
-        "size_bytes": 5460544
+        "to_version_code": 676,
+        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/CherryTree-Modded-v671-to-v676.patch.zip",
+        "sha256": "4cc1d2fc5393e1a4d37fa22080c3b2eb5bcb5ee0e863e4b0de345cad72362f84",
+        "size_bytes": 5459340
       },
       "672": {
         "from_version_code": 672,
-        "to_version_code": 675,
-        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/CherryTree-Modded-v672-to-v675.patch.zip",
-        "sha256": "32738944045c007397c179c3f3b36ca543972dd757747dcb750bad7c90aa0095",
-        "size_bytes": 1017917
+        "to_version_code": 676,
+        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/CherryTree-Modded-v672-to-v676.patch.zip",
+        "sha256": "cb76a7e7569d252553c1c9b5e204aa4252d553526c3178ddf167ee43401426fe",
+        "size_bytes": 977853
       },
       "673": {
         "from_version_code": 673,
-        "to_version_code": 675,
-        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/CherryTree-Modded-v673-to-v675.patch.zip",
-        "sha256": "24d9e1305e28d71eab90dd7f818221678684f8bf80cc9ac569b3ef5296daff3a",
-        "size_bytes": 917780
+        "to_version_code": 676,
+        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/CherryTree-Modded-v673-to-v676.patch.zip",
+        "sha256": "21a245fc86cec68574871dab236aebd60c3e695f55bc28055d62772dec94edb9",
+        "size_bytes": 921308
       },
       "674": {
         "from_version_code": 674,
-        "to_version_code": 675,
-        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/CherryTree-Modded-v674-to-v675.patch.zip",
-        "sha256": "5c8697d855df7f59d1a6a9d494e614d5dffc7197b8cf5f9fdf200f7f6f0aeb7b",
-        "size_bytes": 913419
+        "to_version_code": 676,
+        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/CherryTree-Modded-v674-to-v676.patch.zip",
+        "sha256": "8298b32d25f28e50fcc66688e4acdcf47c601ec2bb96a54d66405d8cfc4e1576",
+        "size_bytes": 924576
+      },
+      "675": {
+        "from_version_code": 675,
+        "to_version_code": 676,
+        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/CherryTree-Modded-v675-to-v676.patch.zip",
+        "sha256": "339894582454e3fba227f3d54a26b675d065e04d49b75983450b597c96f9928b",
+        "size_bytes": 910994
       }
     }
   },
@@ -88,80 +95,87 @@
     "deltas": {
       "664": {
         "from_version_code": 664,
-        "to_version_code": 675,
-        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/Artemiz-Android32-v664-to-v675.patch.zip",
-        "sha256": "1b93f8333b45e1aae25010601c7d8df1f83311fc0a117f87fd274bbb4278d509",
-        "size_bytes": 6456121
+        "to_version_code": 676,
+        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/Artemiz-Android32-v664-to-v676.patch.zip",
+        "sha256": "4102759a1ceef26080e9d82b46348aaaeff49ac680b04c7e1c8283865e734043",
+        "size_bytes": 6459737
       },
       "665": {
         "from_version_code": 665,
-        "to_version_code": 675,
-        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/Artemiz-Android32-v665-to-v675.patch.zip",
-        "sha256": "c9b8a2b970fbad8e057ce0ec15fa2c94c7872ca44f51fac17ac3b3f7e9d183a4",
-        "size_bytes": 6429282
+        "to_version_code": 676,
+        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/Artemiz-Android32-v665-to-v676.patch.zip",
+        "sha256": "13e001a08d664cf9db128574cf295917ae4ed5303f44a1601ffb7958cb048ee5",
+        "size_bytes": 6435280
       },
       "666": {
         "from_version_code": 666,
-        "to_version_code": 675,
-        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/Artemiz-Android32-v666-to-v675.patch.zip",
-        "sha256": "8dee0a062db9d07b79338f5068c84fb45bc25e4f9dfef92022da3ab1ba7e5388",
-        "size_bytes": 6426634
+        "to_version_code": 676,
+        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/Artemiz-Android32-v666-to-v676.patch.zip",
+        "sha256": "3cb06c39822d381661d82ce6a70f220828b6a5c8f78e5b5a266c666aa8f69722",
+        "size_bytes": 6424188
       },
       "667": {
         "from_version_code": 667,
-        "to_version_code": 675,
-        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/Artemiz-Android32-v667-to-v675.patch.zip",
-        "sha256": "3b61d7f6c5b758d3a39083d2bf3a5b5dd4bf9aafdfed48c2289eff5d27937971",
-        "size_bytes": 6408114
+        "to_version_code": 676,
+        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/Artemiz-Android32-v667-to-v676.patch.zip",
+        "sha256": "cd04793747a6afb4ec1618de44a1de8afe692422148984f2ddd551a082c9ed93",
+        "size_bytes": 6412484
       },
       "668": {
         "from_version_code": 668,
-        "to_version_code": 675,
-        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/Artemiz-Android32-v668-to-v675.patch.zip",
-        "sha256": "05dfa2c3a77c88ffc225179ebcd366c159df73a1db0e3cd1cd9a6cc602e10827",
-        "size_bytes": 6408085
+        "to_version_code": 676,
+        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/Artemiz-Android32-v668-to-v676.patch.zip",
+        "sha256": "f18ea90f236e76253fc1161c622a19491b534d28fc4da3b0b7dea271109b305f",
+        "size_bytes": 6410515
       },
       "669": {
         "from_version_code": 669,
-        "to_version_code": 675,
-        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/Artemiz-Android32-v669-to-v675.patch.zip",
-        "sha256": "37cbf590e6fa6aed78e5bf996594c24d008e561bf54ee94d38a1b375e4d55d3b",
-        "size_bytes": 6402017
+        "to_version_code": 676,
+        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/Artemiz-Android32-v669-to-v676.patch.zip",
+        "sha256": "929b31b4ffc6f1e19f9c5da5094fce3c80d96edd139fe76473612ac6cedd9e39",
+        "size_bytes": 6405974
       },
       "670": {
         "from_version_code": 670,
-        "to_version_code": 675,
-        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/Artemiz-Android32-v670-to-v675.patch.zip",
-        "sha256": "85b5c8f8d7e50a2b2e2b2985d857635e0346d0a2e2d50379f809b86f5bade835",
-        "size_bytes": 5442544
+        "to_version_code": 676,
+        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/Artemiz-Android32-v670-to-v676.patch.zip",
+        "sha256": "834dea1fc2e2b4bd9dba864ab4f5bca317d0f92e886bd87c144dadabd517eea0",
+        "size_bytes": 5461533
       },
       "671": {
         "from_version_code": 671,
-        "to_version_code": 675,
-        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/Artemiz-Android32-v671-to-v675.patch.zip",
-        "sha256": "ea9b4ceb6eba8888c6a21ab906a2633594384376f07d0197e3cffc254f409362",
-        "size_bytes": 5460446
+        "to_version_code": 676,
+        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/Artemiz-Android32-v671-to-v676.patch.zip",
+        "sha256": "eb30ebb07948d52da4ff362c3a2b1065e357961694e5e550d4cc35a247c8c251",
+        "size_bytes": 5459305
       },
       "672": {
         "from_version_code": 672,
-        "to_version_code": 675,
-        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/Artemiz-Android32-v672-to-v675.patch.zip",
-        "sha256": "19bce9b2fb6d162f8fff120200523417aaac7368c8d19e825dd7638b09702818",
-        "size_bytes": 1017839
+        "to_version_code": 676,
+        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/Artemiz-Android32-v672-to-v676.patch.zip",
+        "sha256": "580f7d9acf6a21b42ec8b65ac111432e485e5ad67ef1019a797a18dc24ddfdb9",
+        "size_bytes": 977641
       },
       "673": {
         "from_version_code": 673,
-        "to_version_code": 675,
-        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/Artemiz-Android32-v673-to-v675.patch.zip",
-        "sha256": "ab4251c785198e8da707cde5bb40184a497013629fe9b0c9906ccb7d47d84141",
-        "size_bytes": 917175
+        "to_version_code": 676,
+        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/Artemiz-Android32-v673-to-v676.patch.zip",
+        "sha256": "e6881a5ef3de17b051f8ac87de49ad89988ef356a4b491af1a6036fa7b166e9d",
+        "size_bytes": 921275
       },
       "674": {
         "from_version_code": 674,
-        "to_version_code": 675,
-        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/Artemiz-Android32-v674-to-v675.patch.zip",
-        "sha256": "5f9e6cbab8f84959e3775064d64b749e75e1584c00056f9f711b35dcfecb25d8",
-        "size_bytes": 913490
+        "to_version_code": 676,
+        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/Artemiz-Android32-v674-to-v676.patch.zip",
+        "sha256": "ecf35e4e7943931a5a0d721f601645a91c6cbb52254c4275e1d0664946779109",
+        "size_bytes": 924603
+      },
+      "675": {
+        "from_version_code": 675,
+        "to_version_code": 676,
+        "url": "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/Artemiz-Android32-v675-to-v676.patch.zip",
+        "sha256": "fcb317a812b5fdc3853e2279e7a961aa61f0e057bbe55d0a6bb02eaf5ca89213",
+        "size_bytes": 910908
       }
     }
   }
