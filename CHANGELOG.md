@@ -2,6 +2,16 @@
 
 ## 2026-11-27
 
+### v680 Workers and cultivation fields
+
+- Moved the hired-worker roster to its own Workers panel. Hiring opens that panel and highlights the new worker; the Inn remains focused on hiring and offer refreshes.
+- Added worker deployment to Crop, Herb, and Tree fields, Forestry, Mining, and Fishing, with Recall, Reassign, and Fire actions. Workers can run concurrently; field assignments share the game's unlocked plot capacity.
+- Added five Farming-progression herb seeds and harvests, wired through the game's inventory, field, and Farming XP systems. Removed the Farm Auto Replant toggle and behavior; manual farming remains available while deployed field workers automate assigned plots.
+- Preserved worker roster, traits, levels, progress, and legacy Farm assignments during migration. Offline production shares an eight-hour cap across deployed workers and pauses assignments safely when stock, plots, or inventory space is unavailable.
+- Applied the cultivation theme to welcome, profile/skills, Cultivation, Farming, and Workers screens while retaining Artemiz branding.
+- Built v680 base and split APKs for ARM64 and ARMv7, verified signatures, split/version metadata, resources, herb item data, layout controls, and worker DEX contents. Applied all 32 direct update patches from v664–v679 and confirmed every reconstructed split exactly matches its v680 target. Runtime/device testing and installation were not performed.
+- Prepared patch-only release archives for v664–v679 in ARM64 and ARMv7. APK/XAPK bundles remain local. No commit or push was made.
+
 ### v679 Inn navigation layering
 
 - Set the Inn panel's elevation, translation Z, and Z to zero so the native sidebar draws over it. Keep the sidebar on top if the Inn panel refreshes while it is open.
