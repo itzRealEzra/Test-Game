@@ -2,6 +2,12 @@
 
 ## 2026-11-27
 
+### v679 Inn navigation layering
+
+- Set the Inn panel's elevation, translation Z, and Z to zero so the native sidebar draws over it. Keep the sidebar on top if the Inn panel refreshes while it is open.
+- Selecting Inn or Cultivation from the native drawer now dismisses the drawer before showing the selected panel.
+- Built and signature-checked the v679 base and all architecture/language/density splits. Generated direct patch-only updates for v664 through v678 on ARM64 and ARMv7; no APK/XAPK is included in the repository.
+
 ### v678 Panel navigation and Inn fixes
 
 - Keep Cultivation and the Inn selected underneath the game's original navigation drawer when the hamburger is tapped. Selecting another navigation item closes the custom panel before the native screen switch.
