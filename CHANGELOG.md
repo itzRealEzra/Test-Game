@@ -2,6 +2,14 @@
 
 ## 2026-11-27
 
+### v675 Cultivation navigation and breakthrough controls
+
+- Removed the extra `‹ Menu` row from Cultivation so the game keeps its original hamburger navigation.
+- Tapping the original hamburger closes the Cultivation panel before the original game menu opens.
+- Kept the breakthrough control pressable until cultivation is complete; tapping it without enough Qi shows the existing explanation instead of appearing unresponsive.
+- Built and signature-checked the v675 base APK and all split APKs for ARM64 and ARMv7. Generated direct patch-only updates from v664 through v674. APK/XAPK bundles stay local; the game was not installed or launched.
+
+
 ### v674 Proceed to Game crash fix
 
 - Restored `CultivationMigration` to the combined second DEX. `MainActivity` invokes this class during startup, and v673 had omitted it when compiling the mod classes.
