@@ -2,6 +2,16 @@
 
 ## 2026-11-27
 
+### v672 Inn workers and activity updates
+
+- Added an Inn panel with three hire offers that refresh every five minutes. Workers have rarity, traits, levels, and one active assignment at a time.
+- Workers automate Farming through the game’s normal planting and harvesting paths, so regular seeds, inventory, and Farming XP apply. Worker automation continues offline for up to eight hours and uses no special farming item.
+- Moved Cultivation into a full native game panel that keeps the game’s top, side, and bottom navigation visible.
+- Collect all accumulated battle drops through the game’s normal collection flow when the player dies.
+- Removed Safecracking loot and skill-stat webhooks. Achievement Activity Log entries remain individual plain-text messages without Discord mentions.
+- Added generated Inn artwork and a 12-worker portrait atlas.
+- Built direct patch-only updates from v664 through v671 for ARM64 and ARMv7. Full APK/XAPK bundles remain local; the game was not installed.
+
 ### v671 Cultivation panel layout
 
 - Replaced the full-screen Cultivation overlay with a centered, bounded panel matching the game’s other panels. The side navigation and top/bottom HUD stay visible behind it.
