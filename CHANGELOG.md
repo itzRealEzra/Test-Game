@@ -2,6 +2,12 @@
 
 ## 2026-11-27
 
+### v667 patch hotfix
+
+- Rebuilt all ARM64 and ARMv7 configuration splits with version code 667 and the matching signing certificate. This fixes the `INSTALL_FAILED_INVALID_APK` error caused by stale version 666 split manifests.
+- Replaced the six v664/v665/v666-to-v667 patch archives and checksums. The existing updater downloads the corrected archive again on retry; no APK/XAPK was published.
+- Added package assembly checks so future XAPK builds reject a split with mismatched package, version, or split ID.
+
 ### v667 UI and progression update
 
 - Moved the weather icon from the currency strip to the shared skill level and XP bar, and updated binding to follow the visible skill screen.
