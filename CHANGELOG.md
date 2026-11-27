@@ -2,6 +2,16 @@
 
 ## 2026-11-27
 
+### v669 navigation, Wishing Well, and Cultivation
+
+- Moved the live weather icon out of the skill XP bar and into Navigation immediately above My Profile. The row opens the existing weather details panel.
+- Audited Wishing Well caps and stat lookups: Normal/Beginner wish levels are capped at 500 and Endgame levels at 1,000; bonus formulas read the stored wish level without an extra lower cap. Existing explicit effect limits, such as minimum action intervals and the Thieving success ceiling, remain in force.
+- Added local Cultivation with 10 realms and 10 stages per realm. It gathers one Qi per second, continues offline for up to 8 hours, and uses a 70% breakthrough chance that increases by 5 percentage points per failure. Failed attempts remove 20% of stored Qi.
+- Cultivation milestones add 0.2% Attack and Max Health each, capped at +20% apiece. Attack is included before temporary Warfront weather scaling, and the Max Health bonus is reapplied after the game recalculates the base maximum.
+- Updated the welcome screen and release manifest to v669. Generated direct patch updates from v664 through v668 for ARM64 and ARMv7. Published only patch ZIPs; APK/XAPK build artifacts remain local.
+
+## 2026-11-27
+
 ### v668 welcome screen update
 
 - Updated both welcome-screen version labels to v668.
