@@ -2,6 +2,12 @@
 
 ## 2026-11-27
 
+### v674 Proceed to Game crash fix
+
+- Restored `CultivationMigration` to the combined second DEX. `MainActivity` invokes this class during startup, and v673 had omitted it when compiling the mod classes.
+- Kept the game DEX at the known-good v671 build and retained the newline-separated What's New bullets.
+- Built direct patch-only updates from v664 through v673 for ARM64 and ARMv7. Full APK/XAPK bundles remain local; no device was connected for runtime verification.
+
 ### v673 Game entry and release notes
 
 - Preserved the known-good game DEX while rebuilding the v673 resource table, and isolated optional worker initialization so worker errors do not take down game entry.
