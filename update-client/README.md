@@ -9,30 +9,30 @@ Use the exact local source XAPK and signed target XAPK for each supported instal
 - ARM64 source: `CherryTree-Modded-v664-patch.xapk`
 - ARMv7 source: `Artemiz-Android32-v664-patch.xapk`
 
-Build target XAPKs locally with a higher version code and the same signing certificate as the installed package. Keep the same split IDs and APK filenames. `package_xapk.py` requires the Android SDK `aapt` path and checks every replacement APK's package name, version code, version name, and split ID before assembling the XAPK. This catches stale split manifests before they can reach Android's installer. Generate a delta for every supported source version and ABI. For v667, the release contains direct v664-to-v667, v665-to-v667, and v666-to-v667 archives for both architectures. The commands below show the ARMv7 v664 delta; repeat with the ARM64 and v665 inputs using their matching filenames:
+Build target XAPKs locally with a higher version code and the same signing certificate as the installed package. Keep the same split IDs and APK filenames. `package_xapk.py` requires the Android SDK `aapt` path and checks every replacement APK's package name, version code, version name, and split ID before assembling the XAPK. This catches stale split manifests before they can reach Android's installer. Generate a delta for every supported source version and ABI. For v668, the release contains direct v664-to-v668, v665-to-v668, v666-to-v668, and v667-to-v668 archives for both architectures. The commands below show the ARMv7 v664 delta; repeat with the ARM64 and other source versions using their matching filenames:
 
 ```powershell
 python -m pip install -r update-client/requirements.txt
 
 python update-client/make_update_patch.py `
   --from-xapk "..\build-work\update-v664-patch-client\Artemiz-Android32-v664-patch.xapk" `
-  --to-xapk "..\build-work\update-v667\Artemiz-Android32-v667-fixed.xapk" `
-  --output "release\Artemiz-Android32-v664-to-v667.patch.zip" `
-  --url "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/Artemiz-Android32-v664-to-v667.patch.zip"
+  --to-xapk "..\build-work\update-v668\Artemiz-Android32-v668.xapk" `
+  --output "release\Artemiz-Android32-v664-to-v668.patch.zip" `
+  --url "https://raw.githubusercontent.com/itzRealEzra/Test-Game/main/release/Artemiz-Android32-v664-to-v668.patch.zip"
 ```
 
 The generator prints the SHA-256 and the `deltas` JSON object for each archive. Publish the patch archives at those HTTPS URLs and put the matching delta under each ABI in `update.json`. For a patch-only repository, omit full XAPK `url` and `sha256` fields:
 
 ```json
 {
-  "version_code": 667,
-  "version_name": "OB667.261127.0",
+  "version_code": 668,
+  "version_name": "OB668.261127.0",
   "armv7": {
     "deltas": {
       "664": {
         "from_version_code": 664,
-        "to_version_code": 667,
-        "url": "https://example.invalid/Artemiz-Android32-v664-to-v667.patch.zip",
+        "to_version_code": 668,
+        "url": "https://example.invalid/Artemiz-Android32-v664-to-v668.patch.zip",
         "sha256": "<patch-archive-sha256>",
         "size_bytes": 123456
       }

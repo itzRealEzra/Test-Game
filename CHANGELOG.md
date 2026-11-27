@@ -2,6 +2,12 @@
 
 ## 2026-11-27
 
+### v668 welcome screen update
+
+- Updated both welcome-screen version labels to v668.
+- Fixed the What's New list so bullets display on separate lines.
+- Published direct update patches for v664, v665, v666, and v667 on ARM64 and ARMv7. No APK/XAPK was published.
+
 ### v667 patch hotfix
 
 - Rebuilt all ARM64 and ARMv7 configuration splits with version code 667 and the matching signing certificate. This fixes the `INSTALL_FAILED_INVALID_APK` error caused by stale version 666 split manifests.

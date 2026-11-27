@@ -1,6 +1,6 @@
 # Artemiz Android updates
 
-Full XAPK and APK build outputs stay local. GitHub publishes `update.json` and the small, checksum-verified patch archives only. The current patch release supports patch-enabled installs on versions 664 and 665 for ARM64 and ARMv7.
+Full XAPK and APK build outputs stay local. GitHub publishes `update.json` and the small, checksum-verified patch archives only. The current patch release supports patch-enabled installs on versions 664 through 667 for ARM64 and ARMv7.
 
 ## Local-only saves
 
@@ -28,18 +28,30 @@ The [Cloudflare Worker](weather-bridge/cloudflare/README.md) URL is built into t
 
 Combat loot stays accumulated while the selected monster name and area remain the same, and resets when the target changes. The battle controls dispatch by their actual view IDs: Collect Loot calls the game's loot-claim handler, while Leave stops the combat timer before collecting drops and returning to the battle list. This avoids the shared click-selector sending either button to an unrelated Slayer action.
 
-## Latest update — 2026-11-27 (v665)
+## Latest update — 2026-11-27 (v668)
+
+- Updated the welcome screen to show v668 in both version labels.
+- Fixed What's New so each bullet starts on its own line instead of running into the previous item.
+- Published direct v664, v665, v666, and v667 patch paths for ARM64 and ARMv7. No APK or XAPK was published.
+
+## Previous update — 2026-11-27 (v667)
+
+- Moved the weather icon beside the skill level and XP bar; increased Normal Wishing Well caps to 500 and Endgame caps to 1,000.
+- Removed Reddit, Community Hub, and Referrals from the menus, and cleaned up the announcement heading and What's New list.
+- Rebuilt the Android split APKs with matching version codes after the earlier install failure.
+
+## Previous update — 2026-11-27 (v666)
+
+- Replaced Android update dialogs with an animated in-game update panel for checking, downloading, verifying, and preparing patches.
+- Replaced the admin announcement dialog with a game-styled glass-line card that slides in and fades out after a short display.
+- Published patch archives only. No APK or XAPK files are included in the GitHub update.
+
+## Previous update — 2026-11-27 (v665)
 
 - Weather events now use the same three-minute UTC schedule on every client, with Fortune Squall boosting loot quantity across categories and monster drop chance.
 - Added global `/artemiz weather` controls and timed `/artemiz message send|clear` commands. Game announcements appear over the player's current screen and expire automatically.
 - Updated the social links: new Discord invite, owner's Facebook profile, and no YouTube or TikTok entries.
 - Built v665 as an automatic update patch for the v664 patch-enabled bootstrap. The APK has not been installed or launched; please test the patch through the in-game updater.
-
-## Latest update — 2026-11-27 (v666)
-
-- Replaced Android update dialogs with an animated in-game update panel for checking, downloading, verifying, and preparing patches.
-- Replaced the admin announcement dialog with a game-styled glass-line card that slides in and fades out after a short display.
-- Published patch archives only. No APK or XAPK files are included in the GitHub update.
 
 ### v663 update
 
