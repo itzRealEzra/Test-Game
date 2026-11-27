@@ -9,7 +9,7 @@ Use the exact local source XAPK and signed target XAPK for each supported instal
 - ARM64 source: `CherryTree-Modded-v664-patch.xapk`
 - ARMv7 source: `Artemiz-Android32-v664-patch.xapk`
 
-Build target XAPKs locally with a higher version code and the same signing certificate as the installed package. Keep the same split IDs and APK filenames. Generate a delta for every supported source version and ABI. For v666, the release contains v664-to-v666 and v665-to-v666 archives for both architectures. The commands below show the ARMv7 v664 delta; repeat with the ARM64 and v665 inputs using their matching filenames:
+Build target XAPKs locally with a higher version code and the same signing certificate as the installed package. Keep the same split IDs and APK filenames. Generate a delta for every supported source version and ABI. For v667, the release contains direct v664-to-v667, v665-to-v667, and v666-to-v667 archives for both architectures. The commands below show the ARMv7 v664 delta; repeat with the ARM64 and v665 inputs using their matching filenames:
 
 ```powershell
 python -m pip install -r update-client/requirements.txt

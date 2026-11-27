@@ -2,6 +2,14 @@
 
 ## 2026-11-27
 
+### v667 UI and progression update
+
+- Moved the weather icon from the currency strip to the shared skill level and XP bar, and updated binding to follow the visible skill screen.
+- Raised every Normal/Beginner Wishing Well cap to level 500 and every Endgame Wishing Well cap to level 1,000.
+- Removed Reddit from the social chooser and hid the Community Hub and Referrals entry points.
+- Simplified the announcement heading and replaced the What's New hyphen list with clean bullet lines.
+- Generated direct patch updates from supported v664, v665, and v666 installs for both ARM architectures. No APK/XAPK was pushed, and the game was not installed or launched.
+
 ### v666 in-game update and announcement overlays
 
 - Added an animated Artemiz update panel for launch checks, patch download progress, patch application, and update results instead of Android progress or alert dialogs.
