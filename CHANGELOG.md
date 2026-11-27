@@ -2,6 +2,13 @@
 
 ## 2026-11-27
 
+### v677 Sidebar navigation fix
+
+- Added a larger transparent hamburger hit area that draws the game's original menu icon and calls its native Navigation handler. Cultivation and Inn close before the sidebar opens.
+- Updated the welcome version and What's New bullets to v677.
+- Tested on the connected TECNO phone: Continue to Game opened the profile, and the hamburger closed both Cultivation and Inn before opening the original Navigation sidebar. No gameplay controls were used.
+- Generated and validated 26 direct patch-only updates for v664 through v676 on ARM64 and ARMv7. No APK/XAPK is included in the repository.
+
 ### v676 Weather and Inn UI fixes
 
 - Prevented repeated Weather taps from stacking hidden weather dialogs behind the visible panel.
