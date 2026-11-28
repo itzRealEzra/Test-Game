@@ -2,6 +2,14 @@
 
 ## 2026-11-28
 
+### v685 Fix clipped Farm category labels
+
+- Changed Farm category tabs to full “Crop Field,” “Herb Field,” and “Tree Field” labels in a horizontal scroller. Buttons size to their labels and have a taller tap area, so text stays visible on narrow screens.
+- Kept the original inventory icon lookup and item labels, plus the v683 Farm, worker, cultivation, and weather-icon fixes.
+- Built and signature-checked the v685 base and all four APK splits. Generated and verified 42 direct patch-only updates from v664 through v684 for ARM64 and ARMv7; APK/XAPK files remain local.
+
+## 2026-11-28
+
 ### v684 Restore original item icons
 
 - Removed the v683 item-name drawable override and restored `MainActivity`'s original item icon lookup byte-for-byte from v682. Inventory items now use the game's existing icon tables and mappings; item labels remain visible.
