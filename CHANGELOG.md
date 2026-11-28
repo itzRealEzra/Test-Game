@@ -2,6 +2,16 @@
 
 ## 2026-11-28
 
+### v686 Weather and Farm interaction fixes
+
+- Replaced the modal Weather dialog with a nonmodal in-game overlay. Game controls and the original sidebar remain reachable, and switching navigation tabs dismisses the weather card.
+- Keep a separate selected seed for Crop, Herb, and Tree fields. Switching categories no longer clears the seed and briefly falls back to Tomato Seed.
+- Avoid rewriting unchanged Farm selector text and item icons, and avoid recreating the category button layout every refresh to prevent flicker.
+- Keep every unlocked Farm plot visible in all three field categories, including occupied plots and plots currently used by workers.
+- Built and signature-checked the v686 base and all four APK splits. Generated and verified direct patch-only updates from v664 through v685 for ARM64 and ARMv7; APK/XAPK bundles remain local.
+
+## 2026-11-28
+
 ### v685 Fix clipped Farm category labels
 
 - Changed Farm category tabs to full “Crop Field,” “Herb Field,” and “Tree Field” labels in a horizontal scroller. Buttons size to their labels and have a taller tap area, so text stays visible on narrow screens.

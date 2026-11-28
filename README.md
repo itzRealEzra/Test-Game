@@ -1,6 +1,6 @@
 # Artemiz Android updates
 
-Full XAPK and APK build outputs stay local. GitHub publishes `update.json` and the checksum-verified patch archives only. The v685 patch release supports patch-enabled installs on versions 664 through 684 for ARM64 and ARMv7.
+Full XAPK and APK build outputs stay local. GitHub publishes `update.json` and the checksum-verified patch archives only. The v686 patch release supports patch-enabled installs on versions 664 through 685 for ARM64 and ARMv7.
 
 ## Local-only saves
 
@@ -28,7 +28,14 @@ The [Cloudflare Worker](weather-bridge/cloudflare/README.md) URL is built into t
 
 Combat loot stays accumulated while the selected monster name and area remain the same, and resets when the target changes. The battle controls dispatch by their actual view IDs: Collect Loot calls the game's loot-claim handler, while Leave stops the combat timer before collecting drops and returning to the battle list. This avoids the shared click-selector sending either button to an unrelated Slayer action.
 
-## Latest update — 2026-11-28 (v685)
+## Latest update — 2026-11-28 (v686)
+
+- Weather details now use a nonmodal in-game overlay, so taps continue to reach the game and sidebar; changing tabs closes the card.
+- Farm categories remember their selected seed. Unchanged selector text, icons, and tab styles no longer redraw every second, removing the Tomato Seed flash when switching fields.
+- Every unlocked plot stays visible in Crop, Herb, and Tree fields, including plots occupied by workers planting another field type.
+- Published direct v664–v685 patch paths for ARM64 and ARMv7. No APK or XAPK is included.
+
+## Previous update — 2026-11-28 (v685)
 
 - Farm category tabs show the full Crop Field, Herb Field, and Tree Field labels in a horizontal scroller, with larger buttons to prevent clipped text on narrow screens.
 - Kept the original inventory icon lookup and visible item labels, along with the v683 Farm, worker, cultivation, and weather-icon fixes.
