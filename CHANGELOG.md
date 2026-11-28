@@ -2,6 +2,18 @@
 
 ## 2026-11-28
 
+### v683 Farm, cultivation, and inventory fixes
+
+- Herb and Tree fields now select a stocked seed when switching categories, and the field tabs use compact labels that fit smaller screens.
+- Added the five herb seeds to the Market Trader with their correct field level requirements and item icons.
+- Farm workers now check their crops every 250 ms and harvest as soon as a crop is ready, without changing the slower gathering-work cycle.
+- Cultivation grants 10% Attack and Max Health per breakthrough, up to +1,000% at Immortal Ascension Realm Stage X. Max Health updates preserve the player's current health percentage.
+- Inventory icon lookup now checks the drawable derived from the item name before the old positional map, fixing mismatches such as Necklace of Amaran displaying a crown. The selected-item details retain the canonical item name.
+- Cleaned stray edge pixels on the Shadowveil weather icon while keeping its transparent background and dark artwork.
+- Built and signature-checked the v683 base and all four APK splits. Generated and verified 38 direct patch-only updates from v664 through v682 for ARM64 and ARMv7; APK/XAPK files remain local.
+
+## 2026-11-28
+
 ### v682 Farm, worker, and cultivation fixes
 
 - Replaced the mismatched herb seed art with individual seed icons and added Crop, Herb, and Tree field tabs so players can switch the plots they view and manage.
