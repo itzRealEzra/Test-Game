@@ -1,6 +1,6 @@
 # Artemiz Android updates
 
-Full XAPK and APK build outputs stay local. GitHub publishes `update.json` and the small, checksum-verified patch archives only. The v683 patch release supports patch-enabled installs on versions 664 through 682 for ARM64 and ARMv7.
+Full XAPK and APK build outputs stay local. GitHub publishes `update.json` and the checksum-verified patch archives only. The v684 patch release supports patch-enabled installs on versions 664 through 683 for ARM64 and ARMv7.
 
 ## Local-only saves
 
@@ -28,13 +28,11 @@ The [Cloudflare Worker](weather-bridge/cloudflare/README.md) URL is built into t
 
 Combat loot stays accumulated while the selected monster name and area remain the same, and resets when the target changes. The battle controls dispatch by their actual view IDs: Collect Loot calls the game's loot-claim handler, while Leave stops the combat timer before collecting drops and returning to the battle list. This avoids the shared click-selector sending either button to an unrelated Slayer action.
 
-## Latest update — 2026-11-28 (v683)
+## Latest update — 2026-11-28 (v684)
 
-- Fixed blank Herb and Tree field selectors, shortened the field-tab labels, and added Herb seeds to the Market Trader.
-- Farm workers now harvest within 250 ms after a crop becomes ready. Cultivation adds 10% Attack and Max Health per breakthrough up to +1,000% and preserves the current health percentage.
-- Fixed item icon mismatches by resolving icons from item names before the old table; the selected-item panel keeps the item label.
-- Cleaned stray edge pixels on the Shadowveil weather icon while preserving its transparent background.
-- Published direct v664–v682 patch paths for ARM64 and ARMv7. No APK or XAPK is included.
+- Restored the original inventory icon lookup; items use the game's icon mappings again, and item labels remain visible.
+- Kept the v683 Farm, Herb, Tree, worker, cultivation, and weather-icon fixes.
+- Published direct v664–v683 patch paths for ARM64 and ARMv7. No APK or XAPK is included.
 
 ## Previous update — 2026-11-27 (v667)
 

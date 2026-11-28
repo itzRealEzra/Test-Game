@@ -2,6 +2,14 @@
 
 ## 2026-11-28
 
+### v684 Restore original item icons
+
+- Removed the v683 item-name drawable override and restored `MainActivity`'s original item icon lookup byte-for-byte from v682. Inventory items now use the game's existing icon tables and mappings; item labels remain visible.
+- Kept the v683 Farm, worker, cultivation, and weather-icon fixes.
+- Built and signature-checked the v684 base and all four APK splits. Generated and verified 40 direct patch-only updates from v664 through v683 for ARM64 and ARMv7; APK/XAPK files remain local.
+
+## 2026-11-28
+
 ### v683 Farm, cultivation, and inventory fixes
 
 - Herb and Tree fields now select a stocked seed when switching categories, and the field tabs use compact labels that fit smaller screens.
